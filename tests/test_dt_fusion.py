@@ -15,15 +15,20 @@ def test_calc_fusion_power():
     current_dir = os.path.dirname(__file__)
     input_data_dir = os.path.join(current_dir, '..', 'input_data')
     cdf_filename = os.path.join(input_data_dir, f'profiles_{spr_string}.CDF')
-    #pylint: disable=no-member
-    with netCDF4.Dataset(cdf_filename, 'r') as profile_cdf:
-        #pylint: enable=no-member
-        psin = profile_cdf.variables['XPSI'][-1, :]
-        ti = profile_cdf.variables['TI'][-1, :]
-        nd = profile_cdf.variables['NID'][-1, :]
-        nt = profile_cdf.variables['NIT'][-1, :]
-    gfile_filename = f'{spr_string}.eqdsk'
-    gfile_path = os.path.join(input_data_dir, gfile_filename)
-    gfile = my_gfile_reader.getGfile(gfile_path)
-    fusion_power, _ = dt_fusion.calc_fusion_power(psin, nd, nt, ti, gfile)
-    assert abs(fusion_power - 1.66e9) < 0.02e9
+    try:
+        #pylint: disable=no-member
+        with netCDF4.Dataset(cdf_filename, 'r') as profile_cdf:
+            #pylint: enable=no-member
+            print(f"File metadata: {profile_cdf.__dict__}")
+            psin = profile_cdf.variables['XPSI'][-1, :]
+            ti = profile_cdf.variables['TI'][-1, :]
+            nd = profile_cdf.variables['NID'][-1, :]
+            nt = profile_cdf.variables['NIT'][-1, :]
+        gfile_filename = f'{spr_string}.eqdsk'
+        gfile_path = os.path.join(input_data_dir, gfile_filename)
+        gfile = my_gfile_reader.getGfile(gfile_path)
+        fusion_power, _ = dt_fusion.calc_fusion_power(psin, nd, nt, ti, gfile)
+        assert abs(fusion_power - 1.66e9) < 0.02e9
+    except Exception as e:
+        print(f"Error opening file: {e}")
+        raise
