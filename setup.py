@@ -10,7 +10,7 @@ After installation, other modules can import this package for testing purposes.
 from setuptools import setup, find_packages
 
 setup(
-    name='iaea_fec_code',
+    name='nuclear_fusion_code',
     version='0.1.0',
     packages=find_packages(),
 )
