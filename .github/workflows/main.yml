@@ -23,8 +23,16 @@ jobs:
         python-version: ['3.9', '3.10', '3.11']
 
     steps:
+      - name: Install Git LFS
+        run: |
+          sudo apt-get install git-lfs
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Pull LFS files
+        run: |
+          git lfs pull
       
       - name: Set up Python
         uses: actions/setup-python@v4
