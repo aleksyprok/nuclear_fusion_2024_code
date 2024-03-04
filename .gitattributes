@@ -1,0 +1,11 @@
+input_data/SPP-001-1.cdb.locust filter=lfs diff=lfs merge=lfs -text
+input_data/profiles_SPR-045-16.CDF filter=lfs diff=lfs merge=lfs -text
+input_data/SPR-045-16.eqdsk filter=lfs diff=lfs merge=lfs -text
+input_data/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/*/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+input_data/*/*/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
