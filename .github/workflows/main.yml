@@ -3,10 +3,12 @@ name: CI
 on:
   push:
     paths:
+      - 'shell_scripts/*'
       - 'python_scripts/*'
       - 'tests/*'
   pull_request:
     paths:
+      - 'shell_scripts/*'
       - 'python_scripts/*'
       - 'tests/*'
 
