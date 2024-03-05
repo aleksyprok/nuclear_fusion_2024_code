@@ -17,10 +17,13 @@ absolute_value() {
 device="csd3"
 tokamak="STEP"
 SPR_string="SPR-045-16"
-input_dir="STEP_input_files/"$SPR_string
+input_dir="$(pwd)/../input_data"
+home_dir=$HOME
+prec_file=$home_dir"/locust/prec_mod.f90"
 ptcle_file=$SPR_string"_markers_1000000.dat"
 mesh_file="SPP-001-1.cdb.locust"
 eqdsk_file=$SPR_string".eqdsk"
+run_name="FEC_2024"
 
 niter=2
 threadsPerBlock=256
@@ -70,6 +73,8 @@ rwm_contrls+=("$rwm_control")
 rmps+=("$rmp")
 
 # Ripple simulations
+rcoil=0
+ncoil=0
 bripple=1
 toroidal_mode=0
 coil_set="none"
@@ -102,7 +107,391 @@ for ncoil in "${ncoils_unique[@]}"; do
 done
 
 # RMP simulations
+rcoil=0
+ncoil=0
+bripple=0
+toroidal_mode=0
+coil_set="none"
+current=0
+response=0
+phase=0
+gain_value=0
+bscale=0
+bplasma=1
+rwm_control=0
+rmp=1
+phases_unique=("000.00" "045.00" "090.00" "135.00"
+               "180.00" "225.00" "270.00" "315.00")
+toroidal_modes_unique=(-2 -3 -4)
+coil_sets_unique=("efcc" "rwm")
+responses_unique=(0 1)
+current_multipliers_unique=(1 2)
+for coil_set in "${coil_sets_unique[@]}"; do
+    for toroidal_mode in "${toroidal_modes_unique[@]}"; do
+        for current_multiplier in "${current_multipliers_unique[@]}"; do
+            if [[ $coil_set == "efcc" ]]; then
+                if [[ $(($toroidal_mode * $toroidal_mode)) -eq 4 ]]; then
+                    current=$(($current_multiplier * 50))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 9 ]]; then
+                    current=$(($current_multiplier * 90))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 16 ]]; then
+                    current=$(($current_multiplier * 150))
+                else
+                    echo "Invalid toroidal number"
+                    exit 1
+                fi
+            elif [[ $coil_set == "rwm" ]]; then
+                if [[ $(($toroidal_mode * $toroidal_mode)) -eq 4 ]]; then
+                    current=$(($current_multiplier * 30))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 9 ]]; then
+                    current=$(($current_multiplier * 50))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 16 ]]; then
+                    current=$(($current_multiplier * 80))
+                else
+                    echo "Invalid toroidal number"
+                    exit 1
+                fi
+            else
+                echo "Invalid coil set"
+                exit 1
+            fi
+			for response in "${responses_unique[@]}"; do
+				for phase in "${phases_unique[@]}"; do
+                    ncoils+=("$ncoil")
+                    rcoils+=("$rcoil")
+                    bripples+=("$bripple")
+                    toroidal_modes+=("$toroidal_mode")
+                    coil_sets+=("$coil_set")
+                    currents+=("$current")
+                    responses+=("$response")
+                    phases+=("$phase")
+                    gain_values+=("$gain_value")
+                    bscales+=("$bscale")
+                    bplasmas+=("$bplasma")
+                    rwm_contrls+=("$rwm_control")
+                    rmps+=("$rmp")
+                done
+            done
+        done
+    done
+done
 
 # RMP special phases simulations
 
+rcoil=0
+ncoil=0
+bripple=0
+toroidal_mode=0
+coil_set="none"
+current=0
+response=0
+phase=0
+gain_value=0
+bscale=0
+bplasma=1
+rwm_control=0
+rmp=1
+toroidal_modes_unique=(-2 -3 -4)
+coil_sets_unique=("efcc" "rwm")
+responses_unique=(0 1)
+current_multipliers_unique=(1 2)
+for coil_set in "${coil_sets_unique[@]}"; do
+    for toroidal_mode in "${toroidal_modes_unique[@]}"; do
+        for current_multiplier in "${current_multipliers_unique[@]}"; do
+            if [[ $coil_set == "efcc" ]]; then
+                if [[ $(($toroidal_mode * $toroidal_mode)) -eq 4 ]]; then
+                    current=$(($current_multiplier * 50))
+                    phase="061.0"
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 9 ]]; then
+                    current=$(($current_multiplier * 90))
+                    phase="020.0"
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 16 ]]; then
+                    current=$(($current_multiplier * 150))
+                    phase="321.0"
+                else
+                    echo "Invalid toroidal number"
+                    exit 1
+                fi
+            elif [[ $coil_set == "rwm" ]]; then
+                if [[ $(($toroidal_mode * $toroidal_mode)) -eq 4 ]]; then
+                    current=$(($current_multiplier * 30))
+                    phase="265.0"
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 9 ]]; then
+                    current=$(($current_multiplier * 50))
+                    phase="173.0"
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 16 ]]; then
+                    current=$(($current_multiplier * 80))
+                    phase="067.0"
+                else
+                    echo "Invalid toroidal number"
+                    exit 1
+                fi
+            else
+                echo "Invalid coil set"
+                exit 1
+            fi
+			for response in "${responses_unique[@]}"; do
+                ncoils+=("$ncoil")
+                rcoils+=("$rcoil")
+                bripples+=("$bripple")
+                toroidal_modes+=("$toroidal_mode")
+                coil_sets+=("$coil_set")
+                currents+=("$current")
+                responses+=("$response")
+                phases+=("$phase")
+                gain_values+=("$gain_value")
+                bscales+=("$bscale")
+                bplasmas+=("$bplasma")
+                rwm_contrls+=("$rwm_control")
+                rmps+=("$rmp")
+			done
+        done
+    done
+done
+
 # RWM control simulations
+rcoil=0
+ncoil=0
+bripple=0
+toroidal_mode=0
+coil_set="none"
+current=0
+response=0
+phase=0
+gain_value="0.0"
+bscale=0
+bplasma=1
+rwm_control=1
+rmp=0
+bscales_unique=(1 10, 100, 1000)
+for bscale in "${bscales_unique[@]}"; do
+        bscales+=($bscale)
+        ncoils+=("$ncoil")
+        rcoils+=("$rcoil")
+        bripples+=("$bripple")
+        toroidal_modes+=("$toroidal_mode")
+        coil_sets+=("$coil_set")
+        currents+=("$current")
+        responses+=("$response")
+        phases+=("$phase")
+        gain_values+=("$gain_value")
+        bscales+=("$bscale")
+        bplasmas+=("$bplasma")
+        rwm_contrls+=("$rwm_control")
+        rmps+=("$rmp")
+done
+
+module purge
+if [[ $device == "csd3" ]]; then
+    module load rhel8/default-amp
+    module load nvhpc/22.3/gcc-9.4.0-ywtqynx
+    module load hdf5/1.10.7/openmpi-4.1.1/nvhpc-22.3-strpuv5
+    export HDF5_DIR="/usr/local/software/spack/spack-rhel8-20210927/opt/spack/linux-centos8-zen2/nvhpc-22.3/hdf5-1.10.7-strpuv55e7ggr5ilkjrvs2zt3jdztwpv"
+    user_id="ir-prok1"
+    root_dir="/home"
+    cc="80"
+    cuda="11.6"
+    nohdf5=0
+elif [[ $device == "leonardo" ]]; then
+    module load nvhpc/23.1
+    user_id="aprokopy"
+    root_dir="/leonardo/home/userexternal"
+    cc="80"
+    cuda="11.8"
+    nohdf5=1
+else
+    echo "Invalid device."
+    exit 1
+fi
+export LIBRARY_PATH=$LIBRARY_PATH:"$HDF5_DIR/lib"
+export CFLAGS="-I$HDF5_DIR/include"
+export FFLAGS="-I$HDF5_DIR/include"
+export LDFLAGS="-L$HDF5_DIR/lib"
+
+cp -vf \
+$input_dir/"makefile_template" \
+$home_dir"/locust/makefile"
+SRC="ccxx,cudaxx\.x"
+DST="cc"$cc",cuda"$cuda
+sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
+diff "makefile_template" "$home_dir/locust/makefile"
+
+cp -f \
+$input_dir"/profile_"$SPR_string"_ne.dat" \
+$home_dir"/locust."$tokamak"/InputFiles/profile_"$SPR_string"_ne.dat"
+cp -f \
+$input_dir"/profile_"$SPR_string"_Ti.dat" \
+$home_dir"/locust."$tokamak"/InputFiles/profile_"$SPR_string"_Ti.dat"
+cp -f \
+$input_dir"/profile_"$SPR_string"_Te.dat" \
+$home_dir"/locust."$tokamak"/InputFiles/profile_"$SPR_string"_Te.dat"
+cp -f \
+$input_dir"/"$eqdsk_file \
+$home_dir"/locust."$tokamak"/InputFiles/."
+rsync -avh \
+$input_dir"/"$mesh_file \
+$home_dir"/locust."$tokamak"/InputFiles/."
+cp -f \
+$input_dir"/"$ptcle_file \
+$home_dir"/locust."$tokamak"/InputFiles/."
+
+cd $home_dir"/locust"
+
+num_runs=${#rcoils[@]}
+for ((n=0; n<num_runs; n++)); do
+
+    FLAGS_BASE="-DCONLY -DPFCMOD -DTOKHEAD -DFSTATE -DLEIID=6 -DSTDOUT \
+                -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 -DTOKAMAK="$DTOKAMAK" \
+                -DNOTUNE -DUNBOR="$UNBOR" \
+                -DTETALL -DSOLCOL \
+                -DRFORCE -DBP -DTIMAX="$timax" -DWREAL -DWLIST"
+    if [[ $bplasma == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DB3D -DB3D_EX"
+    fi
+    if [[ $nohdf5 == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DNOHDF5"
+    fi
+    if [[ $tokamak == "ITER" ]]; then
+        DTOKAMAK=1
+    elif [[ $tokamak == "STEP" ]]; then
+        DTOKAMAK=10
+    else
+        echo "Invalid tokamak."
+        exit 1
+    fi
+    if [[ $bripple == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DBRIPPLE"
+    fi
+    echo $FLAGS_BASE
+
+    rcoil=${rcoils[$n]}
+    ncoil=${ncoils[$n]}
+    bripple=${bripples[$n]}
+    toroidal_mode=${toroidal_modes[$n]}
+    coil_set=${coil_sets[$n]}
+    current=${currents[$n]}
+    response=${responses[$n]}
+    phase=${phases[$n]}
+    gain_value=${gain_values[$n]}
+    bscale=${bscales[$n]}
+    bplasma=${bplasmas[$n]}
+    rwm_control=${rwm_contrls[$n]}
+    rmp=${rmps[$n]}
+    echo "ncoil="$ncoil
+    echo "rcoil="$rcoil
+    echo "bripple="$bripple
+    echo "toroidal_mode="$toroidal_mode
+    echo "coil_set="$coil_set
+    echo "current="$current
+    echo "response="$response
+    echo "phase="$phase
+    echo "gain_value="$gain_value
+    echo "bscale="$bscale
+    echo "bplasma="$bplasma
+    echo "rwm_control="$rwm_control
+    echo "rmp="$rmp
+
+    toroidal_mode_abs=$(absolute_value $toroidal_mode)
+    echo "toroidal_mode_abs="$toroidal_mode_abs
+
+	cp -vf \
+	$input_dir"/base.f90" \
+	$prec_file 
+
+    SRC="TF_Ncoil = 00"
+    DST="TF_Ncoil = "$ncoil
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="TF_Rcoil = 0.00_gpu"
+    DST="TF_Rcoil = "$rcoil"_gpu"
+    sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="'eqdsk_file.eqdsk' ! apkp"
+	DST="'"$eqdsk_file"'"
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="'mesh_file.cdb.locust' ! apkp"
+	DST="'"$mesh_file"'"
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="niter  = 0 ! apkp - Needs changing"
+	DST="niter  = "$niter
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="'ptcle_file.dat' ! apkp - Needs changing"
+	DST="'"$ptcle_file"'"
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="threadsPerBlock = 256"
+	DST="threadsPerBlock = "$threadsPerBlock
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="blocksPerGrid   = 512"
+	DST="blocksPerGrid   = "$blocksPerGrid
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="dt0    = 0.0e-00_gpu ! apkp - Needs changing"
+	DST="dt0    = "$dt0
+	sed -i "s/$SRC/$DST/g" $prec_file
+	SRC="root = '\/home' ! apkp - Needs changing on Marconi"
+	DST="root = '"$root_dir"'"
+	sed -i "s|$SRC|$DST|g" $prec_file
+    SRC="file_profile_ne = 'profile_ne_file' ! apkp"
+    DST="file_profile_ne = 'profile_"$SPR_string"_ne.dat'"
+	sed -i "s|$SRC|$DST|g" $prec_file
+    SRC="file_profile_Te = 'profile_Te_file' ! apkp"
+    DST="file_profile_Te = 'profile_"$SPR_string"_Te.dat'"
+	sed -i "s|$SRC|$DST|g" $prec_file
+    SRC="file_profile_Ti = 'profile_Ti_file' ! apkp"
+    DST="file_profile_Ti = 'profile_"$SPR_string"_Ti.dat'"
+	sed -i "s|$SRC|$DST|g" $prec_file
+	
+	# BPLASMA code
+
+    if [[ $bplasma == 1 ]]; then
+	
+        SRC="nnum   = \[16, -3\] ! apkp - Needs changing"
+        DST="nnum   = ["$toroidal_mode"]"
+        sed -i "s/$SRC/$DST/g" $prec_file
+        
+        SRC="nmde   = 2 ! apkp - Needs changing"
+        DST="nmde   = 1"
+        sed -i "s/$SRC/$DST/g" $prec_file
+        
+        SRC="phase  = \[0.0e0_gpu, 0.0e0_gpu\] ! apkp - Needs changing"
+        DST="phase  = [0.0e0_gpu]"
+        sed -i "s/$SRC/$DST/g" $prec_file
+
+        # rwm_control and rmp cannot both equal 1
+        # Check this:
+        if [[ $rwm_control == 1 ]] && [[ $rmp == 1 ]]; then
+            echo "rwm_control and rmp cannot both equal 1."
+            exit 1
+        fi
+        if [[ $rwm_control == 1 ]]; then
+            BPLASMA_parts=(
+                "BPLASMA_cylindrical_tesla_G="$gain_value
+                "_bscale="$bscale
+                "_n")
+        elif [[ $rmp == 1 ]]; then
+            BPLASMA_parts=(
+                "BPLASMA_"$coil_set
+                "_response="$response
+                "_current="$(printf "%03d" $current)
+                "_100x200"
+                "_phase="$(printf "%05.1f" $phase)
+                "_n")
+        fi
+        bplasma_file=$(printf "%s" "${BPLASMA_parts[@]}")
+        SRC="'bplasma_file' ! apkp"
+        DST="'"$bplasma_file"'"
+        sed -i "s|$SRC|$DST|g" $prec_file
+
+        if [[ $rwm_control == 1 ]]; then
+            BPLASMA_directory="RWM_control"
+        elif [[ $rmp == 1 ]]; then
+            BPLASMA_directory="DAVE_v2_100x200/"$coil_set"_n"$toroidal_mode
+        fi
+        cp -vf \
+        $input_dir"/BPLASMA/"$BPLASMA_directory"/"$bplasma_file$toroidal_mode_abs \
+        $home_dir"/locust."$tokamak"/InputFiles/."
+
+    fi
+
+	# make clean
+	# make FLAGS="$FLAGS_BASE" -j
+	# mv -f "locust" "locust_"$run_name"_"$n
+
+done

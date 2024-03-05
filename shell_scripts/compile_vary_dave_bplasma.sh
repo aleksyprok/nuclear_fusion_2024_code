@@ -7,40 +7,81 @@ absolute_value() {
     fi
 }
 
-device="leonardo"
+device="csd3"
 tokamak="STEP"
 SPR_string="SPR-045-14"
 input_dir="STEP_input_files/"$SPR_string
-ptcle_file="2200k_uniform_"$SPR_string"_with_noise.dat"
+ptcle_file="2200k_uniform_"$SPR_string".dat"
 mesh_file="SPP-001-1.cdb.locust"
 # eqdsk_file=$SPR_string".geqdsk"
 eqdsk_file=$SPR_string".eqdsk"
 
-niter=1
-threadsPerBlock=256
-blocksPerGrid=256
+niter=3
+threadsPerBlock=128
+blocksPerGrid=128
 timax="1.0_gpu"
 UNBOR=1000
 dt0="1.0e-06_gpu"
 
 # BPLASMA variables:
 BPLASMA=1
-toroidal_mode=-1
-toroidal_mode_abs=$(absolute_value $toroidal_mode)
-bscales_unique=(1 10)
-gain_values_unique=("0.0" "1.0" "2.0" "2.6")
-bscales=()
-gain_values=()
-for gain_value in "${gain_values_unique[@]}"; do
-    for bscale in "${bscales_unique[@]}"; do
-        gain_values+=($gain_value)
-        bscales+=($bscale)
+ripple=0
+sideband=0
+phases_unique=("000.00" "045.00" "090.00" "135.00"
+               "180.00" "225.00" "270.00" "315.00")
+toroidal_modes_unique=(-2 -3 -4)
+coil_sets_unique=("efcc" "rwm")
+responses_unique=(0 1)
+current_multipliers_unique=(1 2)
+coil_sets=()
+toroidal_modes=()
+currents=()
+responses=()
+phases=()
+for coil_set in "${coil_sets_unique[@]}"; do
+    for toroidal_mode in "${toroidal_modes_unique[@]}"; do
+        for current_multiplier in "${current_multipliers_unique[@]}"; do
+            if [[ $coil_set == "efcc" ]]; then
+                if [[ $(($toroidal_mode * $toroidal_mode)) -eq 4 ]]; then
+                    current=$(($current_multiplier * 50))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 9 ]]; then
+                    current=$(($current_multiplier * 90))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 16 ]]; then
+                    current=$(($current_multiplier * 150))
+                else
+                    echo "Invalid toroidal number"
+                    exit 1
+                fi
+            elif [[ $coil_set == "rwm" ]]; then
+                if [[ $(($toroidal_mode * $toroidal_mode)) -eq 4 ]]; then
+                    current=$(($current_multiplier * 30))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 9 ]]; then
+                    current=$(($current_multiplier * 50))
+                elif [[ $(($toroidal_mode * $toroidal_mode)) -eq 16 ]]; then
+                    current=$(($current_multiplier * 80))
+                else
+                    echo "Invalid toroidal number"
+                    exit 1
+                fi
+            else
+                echo "Invalid coil set"
+                exit 1
+            fi
+			for response in "${responses_unique[@]}"; do
+				for phase in "${phases_unique[@]}"; do
+                    coil_sets+=("$coil_set")
+                    toroidal_modes+=("$toroidal_mode")
+                    responses+=("$response")
+                    currents+=("$current")
+                    phases+=("$phase")
+				done
+			done
+        done
     done
 done
-echo ${bscales[@]}
-echo ${gain_values[@]}
-run_name="vary_rwm_tesla"
-num_runs=${#bscales[@]}
+length_of_coil_sets=${#coil_sets[@]}
+echo "Length of coil_sets: $length_of_coil_sets"
+run_name="vary_dave_bplasma"
 
 module purge
 if [[ $device == "csd3" ]]; then
@@ -50,14 +91,12 @@ if [[ $device == "csd3" ]]; then
     export HDF5_DIR="/usr/local/software/spack/spack-rhel8-20210927/opt/spack/linux-centos8-zen2/nvhpc-22.3/hdf5-1.10.7-strpuv55e7ggr5ilkjrvs2zt3jdztwpv"
     user_id="ir-prok1"
     root_dir="/home"
-    cc="80"
-    cuda="11.6"
+	sed -i '/CUDALIB = cc*/c\CUDALIB = cc80,cuda11.6' "makefile_template"
 elif [[ $device == "leonardo" ]]; then
     module load nvhpc/23.1
     user_id="aprokopy"
     root_dir="/leonardo/home/userexternal"
-    cc="80"
-    cuda="11.8"
+	sed -i '/CUDALIB = cc*/c\CUDALIB = cc80,cuda11.8' "makefile_template"
     nohdf5=1
 else
     echo "Invalid device."
@@ -84,11 +123,6 @@ prec_file=$home_dir"/locust/prec_mod.f90"
 cp -vf \
 "makefile_template" \
 $home_dir"/locust/makefile"
-SRC="ccxx,cudaxx\.x"
-DST="cc"$cc",cuda"$cuda
-sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
-diff "makefile_template" "$home_dir/locust/makefile"
-
 cp -f \
 $input_dir"/Profiles/"* \
 $home_dir"/locust."$tokamak"/InputFiles/."
@@ -115,19 +149,17 @@ fi
 if [[ $nohdf5 == 1 ]]; then
     FLAGS_BASE=$FLAGS_BASE" -DNOHDF5"
 fi
-if [[ $BRIPPLE == 1 ]]; then
-	FLAGS_BASE=$FLAGS_BASE" -DBRIPPLE"
-fi
 echo $FLAGS_BASE
 
-for ((n=0; n<num_runs; n++)); do
-# for ((n=0; n<2; n++)); do
+for ((n=0; n<length_of_coil_sets; n++)); do
 	coil_set=${coil_sets[$n]}
-    bscale=${bscales[$n]}
-    gain_value=${gain_values[$n]}
+	toroidal_mode=${toroidal_modes[$n]}
+	toroidal_mode_abs=$(absolute_value $toroidal_mode)
+	echo "toroidal_mode_abs="$toroidal_mode_abs
+	current=${currents[$n]}
+	response=${responses[$n]}
+	phase=${phases[$n]}
 	echo "n="$n
-    echo "gain_value="$gain_value
-    echo "bscale="$bscale
 
 	cp -vf \
 	$input_dir"/locust_scripts/base.f90" \
@@ -160,35 +192,60 @@ for ((n=0; n<num_runs; n++)); do
 	
 	# BPLASMA code
 	
+	nnums=($toroidal_mode)
+	if [[ $ripple == 1 ]]; then
+	    nnums+=($Ncoil)
+	fi
+	if [[ $sideband == 1 ]]; then
+	    nnums+=($sideband_mode)
+	fi
 	SRC="nnum   = \[16, -3\] ! apkp - Needs changing"
-	DST="nnum   = ["$toroidal_mode"]"
+	DST="nnum   = ["
+	if [[ $BPLASMA == 1 ]]; then
+		DST+=$toroidal_mode
+	fi
+	if [[ $ripple == 1 ]]; then
+		DST+=", "$Ncoil
+	fi
+	if [[ $sideband == 1 ]]; then
+		DST+=", "$sideband_mode
+	fi
+	DST+="]"
 	sed -i "s/$SRC/$DST/g" $prec_file
+	echo "DST="$DST
 	
+	nmde=$((BPLASMA+ripple+sideband))
 	SRC="nmde   = 2 ! apkp - Needs changing"
-	DST="nmde   = 1"
+	DST="nmde   = "$nmde
 	sed -i "s/$SRC/$DST/g" $prec_file
 	
 	SRC="phase  = \[0.0e0_gpu, 0.0e0_gpu\] ! apkp - Needs changing"
-	DST="phase  = [0.0e0_gpu]"
+	DST="phase  = ["
+	if [[ $nmde > 0 ]]; then
+		DST+="0.0e0_gpu"
+	fi
+	for (( i=1; i<nmde; i++ )); do
+		DST+=", 0.0e0_gpu"
+	done 		
+	DST+="]"
 	sed -i "s/$SRC/$DST/g" $prec_file
-
+	echo "DST="$DST			
 	BPLASMA_parts=(
-		"BPLASMA_cylindrical_tesla_G="$gain_value
-		"_bscale="$bscale
+		"BPLASMA_"$coil_set
+		"_response="$response
+	    "_current="$(printf "%03d" $current)
+		"_100x200"
+		"_phase="$(printf "%05.1f" $phase)
 		"_n")
 	bplasma_file=$(printf "%s" "${BPLASMA_parts[@]}")
 	SRC="'bplasma_file' ! apkp"
 	DST="'"$bplasma_file"'"
 	sed -i "s|$SRC|$DST|g" $prec_file
 
-	BPLASMA_directory="RWM_control/tesla"
+	BPLASMA_directory="DAVE_v2/"$coil_set"_n"$toroidal_mode
 	cp -vf \
 	$input_dir"/BPLASMA/"$BPLASMA_directory"/"$bplasma_file$toroidal_mode_abs \
 	$home_dir"/locust."$tokamak"/InputFiles/."
-    
-    if [[ $n == 0 ]]; then
-        diff $prec_file $input_dir"/locust_scripts/base.f90"
-    fi
 	
 	make clean
 	make FLAGS="$FLAGS_BASE" -j
