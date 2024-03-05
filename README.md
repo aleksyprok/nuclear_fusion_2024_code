@@ -14,6 +14,7 @@ This repository is organized as follows:
 
 - `__init__.py` - Indicates that this directory is treated as a Python package.
   - `prepare_profiles.py` - The main script that processes profile data for simulations.
+  - `my_gfile_reader.py` - Module for reading in eqdsk files (not written by me).
 
 `/tests` - Contains automated test cases for the Python scripts:
 
@@ -29,10 +30,6 @@ This repository is organized as follows:
 
 ## How we produced the data for the paper
 
-### Step 1: Produce profile data
+### Step 1: Produce density/temperature profiles and alpha particle initial position.
 
 The first thing we did was to produce the profile data. This was done using the `prepare_profiles.py` script. This script takes the raw data from the input directory and processes it into a format that can be used for simulations.
-
-### Step 2: Produce alphas
-
-The next step was to produce the alphas. This was done using the `generate_alphas.py` script. This script takes the profile data and produces the alphas that are used in the simulations.
