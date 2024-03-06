@@ -155,8 +155,8 @@ for coil_set in "${coil_sets_unique[@]}"; do
                 echo "Invalid coil set"
                 exit 1
             fi
-			for response in "${responses_unique[@]}"; do
-				for phase in "${phases_unique[@]}"; do
+            for response in "${responses_unique[@]}"; do
+                for phase in "${phases_unique[@]}"; do
                     ncoils+=("$ncoil")
                     rcoils+=("$rcoil")
                     bripples+=("$bripple")
@@ -230,7 +230,7 @@ for coil_set in "${coil_sets_unique[@]}"; do
                 echo "Invalid coil set"
                 exit 1
             fi
-			for response in "${responses_unique[@]}"; do
+            for response in "${responses_unique[@]}"; do
                 ncoils+=("$ncoil")
                 rcoils+=("$rcoil")
                 bripples+=("$bripple")
@@ -244,7 +244,7 @@ for coil_set in "${coil_sets_unique[@]}"; do
                 bplasmas+=("$bplasma")
                 rwm_contrls+=("$rwm_control")
                 rmps+=("$rmp")
-			done
+            done
         done
     done
 done
@@ -445,7 +445,7 @@ for ((n=0; n<num_runs; n++)); do
         SRC="nnum   = \[16, -3\] ! apkp - Needs changing"
         DST="nnum   = ["$toroidal_mode"]"
         sed -i "s/$SRC/$DST/g" $prec_file
-        
+
         SRC="nmde   = 2 ! apkp - Needs changing"
         DST="nmde   = 1"
         sed -i "s/$SRC/$DST/g" $prec_file
@@ -490,8 +490,8 @@ for ((n=0; n<num_runs; n++)); do
 
     fi
 
-	# make clean
-	# make FLAGS="$FLAGS_BASE" -j
-	# mv -f "locust" "locust_"$run_name"_"$n
+    # make clean
+    # make FLAGS="$FLAGS_BASE" -j
+    # mv -f "locust" "locust_"$run_name"_"$n
 
 done
