@@ -265,7 +265,6 @@ rwm_control=1
 rmp=0
 bscales_unique=(1 10, 100, 1000)
 for bscale in "${bscales_unique[@]}"; do
-        bscales+=($bscale)
         ncoils+=("$ncoil")
         rcoils+=("$rcoil")
         bripples+=("$bripple")
