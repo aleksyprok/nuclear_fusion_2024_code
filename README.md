@@ -33,3 +33,14 @@ This repository is organized as follows:
 ### Step 1: Produce density/temperature profiles and alpha particle initial position.
 
 The first thing we did was to produce the profile data. This was done using the `prepare_profiles.py` script. This script takes the raw data from the input directory and processes it into a format that can be used for simulations.
+
+### Step 2: ssh into remote machine
+
+For this work I used the CSD3 cluster:
+https://docs.hpc.cam.ac.uk/hpc/index.html
+
+### Step 3: Clone locust code
+
+For the shell scripts to work the `locust` code must be cloned into the home space and you need to run
+``git checkout 1f28dcdc16a89e976832beaffd7e207b4d978c5b``
+to get the same version of the code.
