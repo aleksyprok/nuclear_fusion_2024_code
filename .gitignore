@@ -168,3 +168,6 @@ locust_input_dir
 tests/output_data
 tests/output_plots
 output_plots
+shell_scripts/test_dmtcp*
+shell_scripts/test_dmtcp*
+shell_scripts/job.sbatch
