@@ -314,7 +314,7 @@ $home_dir"/locust/makefile"
 SRC="ccxx,cudaxx\.x"
 DST="cc"$cc",cuda"$cuda
 sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
-diff "makefile_template" "$home_dir/locust/makefile"
+diff $input_dir/"makefile_template" "$home_dir/locust/makefile"
 
 cp -f \
 $input_dir"/profile_"$SPR_string"_ne.dat" \
