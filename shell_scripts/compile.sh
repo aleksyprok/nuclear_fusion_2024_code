@@ -511,11 +511,10 @@ for ((n=0; n<num_runs; n++)); do
 
     # Update prec_file with the new values
     sed -i "s/real( gpu )                                   :: Pdep   = x/real( gpu )                                   :: Pdep   = $pdep/" $prec_file
-    	sed -i "s/integer,                            parameter :: nion   = x/integer,                            parameter :: nion   = $nion/" $prec_file
-    	sed -i "s/real( gpu ),  dimension(nion),      parameter :: fi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: fi     = \[$fi_str\]/" $prec_file
-    	sed -i "s/real( gpu ),  dimension(nion),      parameter :: Ai     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Ai     = \[$Ai_str\]/" $prec_file
-    	sed -i "s/real( gpu ),  dimension(nion),      parameter :: Zi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Zi     = \[$Zi_str\]/" $prec_file
-    	
+    sed -i "s/integer,                            parameter :: nion   = x/integer,                            parameter :: nion   = $nion/" $prec_file
+    sed -i "s/real( gpu ),  dimension(nion),      parameter :: fi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: fi     = \[$fi_str\]/" $prec_file
+    sed -i "s/real( gpu ),  dimension(nion),      parameter :: Ai     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Ai     = \[$Ai_str\]/" $prec_file
+    sed -i "s/real( gpu ),  dimension(nion),      parameter :: Zi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Zi     = \[$Zi_str\]/" $prec_file
 
     make clean
     make FLAGS="$FLAGS_BASE" -j
