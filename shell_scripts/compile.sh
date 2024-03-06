@@ -520,3 +520,18 @@ for ((n=0; n<num_runs; n++)); do
     mv -f "locust" "locust_"$run_name"_"$n
 
 done
+
+# Print length of arrays
+echo "Length of rcoils: ${#rcoils[@]}"
+echo "Length of ncoils: ${#ncoils[@]}"
+echo "Length of bripples: ${#bripples[@]}"
+echo "Length of toroidal_modes: ${#toroidal_modes[@]}"
+echo "Length of coil_sets: ${#coil_sets[@]}"
+echo "Length of currents: ${#currents[@]}"
+echo "Length of responses: ${#responses[@]}"
+echo "Length of phases: ${#phases[@]}"
+echo "Length of gain_values: ${#gain_values[@]}"
+echo "Length of bscales: ${#bscales[@]}"
+echo "Length of bplasmas: ${#bplasmas[@]}"
+echo "Length of rwm_contrls: ${#rwm_contrls[@]}"
+echo "Length of rmps: ${#rmps[@]}"
