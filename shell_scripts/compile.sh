@@ -394,9 +394,9 @@ for ((n=0; n<num_runs; n++)); do
     toroidal_mode_abs=$(absolute_value $toroidal_mode)
     echo "toroidal_mode_abs="$toroidal_mode_abs
 
-	cp -vf \
-	$input_dir"/base.f90" \
-	$prec_file 
+    cp -vf \
+    $input_dir"/base.f90" \
+    $prec_file 
 
     SRC="TF_Ncoil = 00"
     DST="TF_Ncoil = "$ncoil
@@ -404,44 +404,44 @@ for ((n=0; n<num_runs; n++)); do
     SRC="TF_Rcoil = 0.00_gpu"
     DST="TF_Rcoil = "$rcoil"_gpu"
     sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="'eqdsk_file.eqdsk' ! apkp"
-	DST="'"$eqdsk_file"'"
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="'mesh_file.cdb.locust' ! apkp"
-	DST="'"$mesh_file"'"
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="niter  = 0 ! apkp - Needs changing"
-	DST="niter  = "$niter
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="'ptcle_file.dat' ! apkp - Needs changing"
-	DST="'"$ptcle_file"'"
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="threadsPerBlock = 256"
-	DST="threadsPerBlock = "$threadsPerBlock
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="blocksPerGrid   = 512"
-	DST="blocksPerGrid   = "$blocksPerGrid
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="dt0    = 0.0e-00_gpu ! apkp - Needs changing"
-	DST="dt0    = "$dt0
-	sed -i "s/$SRC/$DST/g" $prec_file
-	SRC="root = '\/home' ! apkp - Needs changing on Marconi"
-	DST="root = '"$root_dir"'"
-	sed -i "s|$SRC|$DST|g" $prec_file
+    SRC="'eqdsk_file.eqdsk' ! apkp"
+    DST="'"$eqdsk_file"'"
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="'mesh_file.cdb.locust' ! apkp"
+    DST="'"$mesh_file"'"
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="niter  = 0 ! apkp - Needs changing"
+    DST="niter  = "$niter
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="'ptcle_file.dat' ! apkp - Needs changing"
+    DST="'"$ptcle_file"'"
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="threadsPerBlock = 256"
+    DST="threadsPerBlock = "$threadsPerBlock
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="blocksPerGrid   = 512"
+    DST="blocksPerGrid   = "$blocksPerGrid
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="dt0    = 0.0e-00_gpu ! apkp - Needs changing"
+    DST="dt0    = "$dt0
+    sed -i "s/$SRC/$DST/g" $prec_file
+    SRC="root = '\/home' ! apkp - Needs changing on Marconi"
+    DST="root = '"$root_dir"'"
+    sed -i "s|$SRC|$DST|g" $prec_file
     SRC="file_profile_ne = 'profile_ne_file' ! apkp"
     DST="file_profile_ne = 'profile_"$SPR_string"_ne.dat'"
-	sed -i "s|$SRC|$DST|g" $prec_file
+    sed -i "s|$SRC|$DST|g" $prec_file
     SRC="file_profile_Te = 'profile_Te_file' ! apkp"
     DST="file_profile_Te = 'profile_"$SPR_string"_Te.dat'"
-	sed -i "s|$SRC|$DST|g" $prec_file
+    sed -i "s|$SRC|$DST|g" $prec_file
     SRC="file_profile_Ti = 'profile_Ti_file' ! apkp"
     DST="file_profile_Ti = 'profile_"$SPR_string"_Ti.dat'"
-	sed -i "s|$SRC|$DST|g" $prec_file
-	
-	# BPLASMA code
+    sed -i "s|$SRC|$DST|g" $prec_file
+
+    # BPLASMA code
 
     if [[ $bplasma == 1 ]]; then
-	
+
         SRC="nnum   = \[16, -3\] ! apkp - Needs changing"
         DST="nnum   = ["$toroidal_mode"]"
         sed -i "s/$SRC/$DST/g" $prec_file
@@ -449,7 +449,7 @@ for ((n=0; n<num_runs; n++)); do
         SRC="nmde   = 2 ! apkp - Needs changing"
         DST="nmde   = 1"
         sed -i "s/$SRC/$DST/g" $prec_file
-        
+
         SRC="phase  = \[0.0e0_gpu, 0.0e0_gpu\] ! apkp - Needs changing"
         DST="phase  = [0.0e0_gpu]"
         sed -i "s/$SRC/$DST/g" $prec_file
