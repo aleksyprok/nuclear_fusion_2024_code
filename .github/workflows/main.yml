@@ -28,7 +28,7 @@ jobs:
           sudo apt-get install git-lfs
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Pull LFS files
         run: |
