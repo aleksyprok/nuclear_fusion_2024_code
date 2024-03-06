@@ -341,7 +341,7 @@ num_runs=${#rcoils[@]}
 for ((n=0; n<num_runs; n++)); do
 
     FLAGS_BASE="-DCONLY -DPFCMOD -DTOKHEAD -DFSTATE -DLEIID=6 -DSTDOUT \
-                -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 -DTOKAMAK="$DTOKAMAK" \
+                -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 \
                 -DNOTUNE -DUNBOR="$UNBOR" \
                 -DTETALL -DSOLCOL \
                 -DRFORCE -DBP -DTIMAX="$timax" -DWREAL -DWLIST"
@@ -352,9 +352,9 @@ for ((n=0; n<num_runs; n++)); do
         FLAGS_BASE=$FLAGS_BASE" -DNOHDF5"
     fi
     if [[ $tokamak == "ITER" ]]; then
-        DTOKAMAK=1
+        FLAGS_BASE=$FLAGS_BASE" -DTOKAMAK=1"
     elif [[ $tokamak == "STEP" ]]; then
-        DTOKAMAK=10
+        FLAGS_BASE=$FLAGS_BASE" -DTOKAMAK=10"
     else
         echo "Invalid tokamak."
         exit 1
@@ -490,8 +490,35 @@ for ((n=0; n<num_runs; n++)); do
 
     fi
 
-    # make clean
-    # make FLAGS="$FLAGS_BASE" -j
-    # mv -f "locust" "locust_"$run_name"_"$n
+    # Read and process pdep_fi.dat file
+    pdep_fi_file="$input_dir/ion_info_"$SPR_string".dat"
+    nion=$(sed -n '1p' "$pdep_fi_file")
+    pdep=$(sed -n '2p' "$pdep_fi_file")
+    echo $pdep
+
+    # Prepare arrays for fi, Ai, and Zi
+    declare -a fi_array=() Ai_array=() Zi_array=()
+    while IFS=' ' read -r zi fi ion_name; do
+        fi_array+=("$fi")
+        Zi_array+=("$zi")
+        Ai_array+=("$ion_name") # Directly use the ion name string
+    done < <(tail -n +3 "$pdep_fi_file")
+
+    # Convert arrays to comma-separated strings for Fortran
+    fi_str=$(IFS=,; echo "${fi_array[*]}")
+    Ai_str=$(IFS=,; echo "${Ai_array[*]}")
+    Zi_str=$(IFS=,; echo "${Zi_array[*]}")
+
+    # Update prec_file with the new values
+    sed -i "s/real( gpu )                                   :: Pdep   = x/real( gpu )                                   :: Pdep   = $pdep/" $prec_file
+    	sed -i "s/integer,                            parameter :: nion   = x/integer,                            parameter :: nion   = $nion/" $prec_file
+    	sed -i "s/real( gpu ),  dimension(nion),      parameter :: fi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: fi     = \[$fi_str\]/" $prec_file
+    	sed -i "s/real( gpu ),  dimension(nion),      parameter :: Ai     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Ai     = \[$Ai_str\]/" $prec_file
+    	sed -i "s/real( gpu ),  dimension(nion),      parameter :: Zi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Zi     = \[$Zi_str\]/" $prec_file
+    	
+
+    make clean
+    make FLAGS="$FLAGS_BASE" -j
+    mv -f "locust" "locust_"$run_name"_"$n
 
 done
