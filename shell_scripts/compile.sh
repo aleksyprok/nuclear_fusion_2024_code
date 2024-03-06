@@ -253,7 +253,7 @@ done
 rcoil=0
 ncoil=0
 bripple=0
-toroidal_mode=0
+toroidal_mode=-1
 coil_set="none"
 current=0
 response=0
@@ -339,30 +339,6 @@ cd $home_dir"/locust"
 num_runs=${#rcoils[@]}
 for ((n=0; n<num_runs; n++)); do
 
-    FLAGS_BASE="-DCONLY -DPFCMOD -DTOKHEAD -DFSTATE -DLEIID=6 -DSTDOUT \
-                -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 \
-                -DNOTUNE -DUNBOR="$UNBOR" \
-                -DTETALL -DSOLCOL \
-                -DRFORCE -DBP -DTIMAX="$timax" -DWREAL -DWLIST"
-    if [[ $bplasma == 1 ]]; then
-        FLAGS_BASE=$FLAGS_BASE" -DB3D -DB3D_EX"
-    fi
-    if [[ $nohdf5 == 1 ]]; then
-        FLAGS_BASE=$FLAGS_BASE" -DNOHDF5"
-    fi
-    if [[ $tokamak == "ITER" ]]; then
-        FLAGS_BASE=$FLAGS_BASE" -DTOKAMAK=1"
-    elif [[ $tokamak == "STEP" ]]; then
-        FLAGS_BASE=$FLAGS_BASE" -DTOKAMAK=10"
-    else
-        echo "Invalid tokamak."
-        exit 1
-    fi
-    if [[ $bripple == 1 ]]; then
-        FLAGS_BASE=$FLAGS_BASE" -DBRIPPLE"
-    fi
-    echo $FLAGS_BASE
-
     rcoil=${rcoils[$n]}
     ncoil=${ncoils[$n]}
     bripple=${bripples[$n]}
@@ -392,6 +368,31 @@ for ((n=0; n<num_runs; n++)); do
 
     toroidal_mode_abs=$(absolute_value $toroidal_mode)
     echo "toroidal_mode_abs="$toroidal_mode_abs
+
+
+    FLAGS_BASE="-DCONLY -DPFCMOD -DTOKHEAD -DFSTATE -DLEIID=6 -DSTDOUT \
+                -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 \
+                -DNOTUNE -DUNBOR="$UNBOR" \
+                -DTETALL -DSOLCOL \
+                -DRFORCE -DBP -DTIMAX="$timax" -DWREAL -DWLIST"
+    if [[ $bplasma == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DB3D -DB3D_EX"
+    fi
+    if [[ $nohdf5 == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DNOHDF5"
+    fi
+    if [[ $tokamak == "ITER" ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DTOKAMAK=1"
+    elif [[ $tokamak == "STEP" ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DTOKAMAK=10"
+    else
+        echo "Invalid tokamak."
+        exit 1
+    fi
+    if [[ $bripple == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DBRIPPLE"
+    fi
+    echo $FLAGS_BASE
 
     cp -vf \
     $input_dir"/base.f90" \
