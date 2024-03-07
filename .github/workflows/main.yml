@@ -29,10 +29,12 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: false
 
-      - name: Pull LFS files
+      - name: Pull specific LFS files
         run: |
-          git lfs pull
+          git lfs pull --include="input_data/LOCUST_SPR-045-14_OutputFiles/*"
       
       - name: Set up Python
         uses: actions/setup-python@v5
