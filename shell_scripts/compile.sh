@@ -14,7 +14,7 @@ absolute_value() {
     fi
 }
 
-device="csd3"
+device="aws_v100"
 tokamak="STEP"
 SPR_string="SPR-045-16"
 input_dir="$(pwd)/../input_data"
@@ -280,24 +280,27 @@ for bscale in "${bscales_unique[@]}"; do
         rmps+=("$rmp")
 done
 
-module purge
 if [[ $device == "csd3" ]]; then
+    module purge
     module load rhel8/default-amp
     module load nvhpc/22.3/gcc-9.4.0-ywtqynx
     module load hdf5/1.10.7/openmpi-4.1.1/nvhpc-22.3-strpuv5
     export HDF5_DIR="/usr/local/software/spack/spack-rhel8-20210927/opt/spack/linux-centos8-zen2/nvhpc-22.3/hdf5-1.10.7-strpuv55e7ggr5ilkjrvs2zt3jdztwpv"
-    user_id="ir-prok1"
     root_dir="/home"
     cc="80"
     cuda="11.6"
     nohdf5=0
 elif [[ $device == "leonardo" ]]; then
+    module purge
     module load nvhpc/23.1
-    user_id="aprokopy"
     root_dir="/leonardo/home/userexternal"
     cc="80"
     cuda="11.8"
     nohdf5=1
+elif [[ $device == "aws_v100" ]]; then
+    root_dir="/home"
+    cc="70"
+    cuda="11.4"
 else
     echo "Invalid device."
     exit 1
@@ -337,6 +340,7 @@ $home_dir"/locust."$tokamak"/InputFiles/."
 cd $home_dir"/locust"
 
 num_runs=${#rcoils[@]}
+num_runs=1
 for ((n=0; n<num_runs; n++)); do
 
     rcoil=${rcoils[$n]}
