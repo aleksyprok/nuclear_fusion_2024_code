@@ -135,7 +135,7 @@ def calc_e_alpha_std(coords, gfile, ti, psin):
     Returns:
         np.ndarray
             The standard deviation of the alpha energy distribution
-            with shape (num_markers,).
+            with shape (num_markers,) in Joules.
     """
 
     interp_ti = ProfileCylindrical(gfile, ti, psin)
