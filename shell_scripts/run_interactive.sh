@@ -6,6 +6,7 @@ tokamak="STEP"
 run_name="FEC_2024"
 
 if [[ $device == "aws_v100" ]]; then
+    export PATH=$PATH:/opt/nvidia/hpc_sdk/Linux_x86_64/23.9/compilers/bin
     root_dir="/home"
     user_id="qt4627"
     cc="70"
