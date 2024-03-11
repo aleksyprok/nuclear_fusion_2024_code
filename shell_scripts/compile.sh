@@ -300,7 +300,8 @@ elif [[ $device == "leonardo" ]]; then
 elif [[ $device == "aws_v100" ]]; then
     root_dir="/home"
     cc="70"
-    cuda="11.4"
+    cuda="11.0"
+    nohdf5=1
 else
     echo "Invalid device."
     exit 1
@@ -316,6 +317,11 @@ $home_dir"/locust/makefile"
 SRC="ccxx,cudaxx\.x"
 DST="cc"$cc",cuda"$cuda
 sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
+if [[ $nohdf5 == 1 ]]; then
+    SRC="-ltsdc++ -lhdf5_fortran -lhdf5"
+    DST="-ltsdc++"
+    sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
+fi
 diff $input_dir/"makefile_template" "$home_dir/locust/makefile"
 
 cp -f \
