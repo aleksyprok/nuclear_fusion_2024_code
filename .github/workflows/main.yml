@@ -4,13 +4,11 @@ on:
   push:
     paths:
       - '.github/workflows/*'
-      - 'shell_scripts/*'
       - 'python_scripts/*'
       - 'tests/*'
   pull_request:
     paths:
       - '.github/workflows/*'
-      - 'shell_scripts/*'
       - 'python_scripts/*'
       - 'tests/*'
 
