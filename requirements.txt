@@ -7,7 +7,6 @@ dill==0.3.8
 exceptiongroup==1.2.0
 fonttools==4.48.1
 fortranformat==2.0.0
--e git+https://github.com/aleksyprok/nuclear_fusion_2024_code.git@8569c06c3b89b22b25b7793c9ee1fb56224f9530#egg=iaea_fec_code
 importlib-resources==6.1.1
 iniconfig==2.0.0
 isort==5.13.2
