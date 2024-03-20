@@ -1,5 +1,5 @@
 """
-This module contains routines fro calculating kernel desnity estimates
+This module contains routines for calculating kernel desnity estimates
 over 1D and 2D domains. With periodic boundary conditions.
 """
 
