@@ -25,7 +25,7 @@ from scipy import interpolate
 
 class ProfileCylindrical:
     """
-    Profile class to prodivde a way to calculate the ion temperature
+    Profile class to provide a way to calculate the ion temperature
     or density from R, Z coordinates.
     """
     def __init__(self, input_gfile, input_profile, input_psin):
