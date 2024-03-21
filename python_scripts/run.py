@@ -6,7 +6,7 @@ The run object contain three nested classes, log, stopped and grid.
 The log class contains information obtained by reading the LOG*.out file.
 The stopped class contains information obtained by reading the FINAL_STATE*.dat file
 and only stores information about particles that have hit the wall.
-The grid class contains information obtained by reading the wall 2D wall files, e.g.
+The wall class contains information obtained by reading the wall 2D wall files, e.g.
 input_data/SPP-001_wall.dat.
 Note that the log class and grid classes are standalone classes, but many of the methods in the
 stopped module require the log and grid classes.

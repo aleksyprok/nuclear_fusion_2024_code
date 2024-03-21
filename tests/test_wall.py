@@ -24,3 +24,25 @@ def test_get_s_theta_from_rz():
     s_theta = wall.get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall)
     s_theta_test = np.array([0.3, 1.2, 2.3, 3.8])
     assert np.allclose(s_theta, s_theta_test, atol=1e-8)
+
+def test_get_s_nodes():
+    """
+    Test the get_s_nodes function.
+    """
+    r_wall = np.array([0, 1, 1, 0, 0])
+    z_wall = np.array([0, 0, 1, 1, 0])
+    s_nodes = np.array([0, 1, 2, 3, 4])
+    assert np.allclose(wall.get_s_nodes(r_wall, z_wall), s_nodes, atol=1e-8)
+
+def test_get_rz_from_s_theta():
+    """
+    Test the get_rz_from_s_theta function.
+    """
+    s_theta = np.array([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5])
+    r_wall = np.array([0, 1, 1, 0, 0])
+    z_wall = np.array([0, 0, 1, 1, 0])
+    r_array, z_array = wall.get_rz_from_s_theta(s_theta, r_wall, z_wall)
+    r_array_test = np.array([0.0, 0.5, 1.0, 1.0, 1.0, 0.5, 0.0, 0.0])
+    z_array_test = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 0.5])
+    assert np.allclose(r_array, r_array_test, atol=1e-8)
+    assert np.allclose(z_array, z_array_test, atol=1e-8)

@@ -8,6 +8,46 @@ from shapely.geometry import Point, Polygon, LineString
 from shapely.ops import nearest_points
 from scipy.spatial.distance import cdist
 
+class Wall:
+    """
+    Class for storing information about the wall.
+    """
+    def __init__(self,
+                 r_wall : np.ndarray,
+                 z_wall : np.ndarray,
+                 num_grid_points : int,
+                 special_nodes=(0, 1, 2, 3)):
+        """
+        Args:
+            r_wall: array of the r coordinates of the wall
+            z_wall: array of the z coordinates of the wall
+            num_grid_points: number of grid points to use for the kdes.
+            special_nodes: list of the special node indices, we use this to
+                           mark where boundaries of the outer wall
+                           upper divertor, inner wall and lower divertor.
+        """
+        self.r_wall = r_wall
+        self.z_wall = z_wall
+        self.num_grid_points = num_grid_points
+        self.special_nodes = special_nodes
+
+
+        self.cr, self.cz = calc_wall_centroid(r_wall, z_wall)
+        # self.s_nodes = get_s_nodes(r_wall, z_wall)
+
+        # self.s_phi_min = 0
+        # self.s_phi_max = 2 * np.pi * self.cr
+
+        # self.s_theta_min = 0
+        # self.s_theta_max = self.s_nodes[-1]
+
+        # self.s_phi = np.linspace(self.s_phi_min, self.s_phi_max, num_grid_points)
+        # self.s_theta = np.linspace(self.s_theta_min, self.s_theta_max, num_grid_points)
+        # self.S_PHI, self.S_THETA = np.meshgrid(self.s_phi, self.s_theta)
+
+        # self.scale_factor_1d = scale_factor_1d_class(r_wall, z_wall)
+        # self.scale_factor_2d = scale_factor_2d_class(r_wall, z_wall)
+
 def calc_wall_centroid(r_wall, z_wall):
     """
     calculate the centroid of the wall using formula given here:
@@ -61,15 +101,15 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
             if LineString((coords0, coords1)).distance(Point(r_new, z_new)) < 1e-8:
                 if nearest_node == 0:
                     s_theta[n] = s_theta_nodes[-1] \
-                               + cdist([coords0], [[r_new, z_new]])[0][0]
+                            + cdist([coords0], [[r_new, z_new]])[0][0]
                 else:
                     s_theta[n] = s_theta_nodes[nearest_node - 1] \
-                               + cdist([coords0], [[r_new, z_new]])[0][0]
+                            + cdist([coords0], [[r_new, z_new]])[0][0]
 
             # Check if the point is on line connecting coords1 with coords2
             elif LineString((coords1, coords2)).distance(Point(r_new, z_new)) < 1e-8:
                 s_theta[n] = s_theta_nodes[nearest_node] \
-                           + cdist([coords1], [[r_new, z_new]])[0][0]
+                        + cdist([coords1], [[r_new, z_new]])[0][0]
 
             # In the unlikely event that the particle is not on the wall connected to the
             # nearest vertices then we check all walls. Note that this is more
@@ -80,7 +120,7 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
                     index += 1
                     if LineString((coords1, coords2)).distance(Point(r_new, z_new)) < 1e-8:
                         s_theta[n] = s_theta_nodes[index] \
-                                   + cdist([coords1], [[r_new, z_new]])[0][0]
+                                + cdist([coords1], [[r_new, z_new]])[0][0]
                         # print('This point did not lie on walls connected to nearest vertex:', \
                         #       r_coord[n], z_coord[n])
                         break
@@ -97,7 +137,7 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
     s_theta_nodes[1:] = np.cumsum(ds[:-1])
 
     shm = shared_memory.SharedMemory(create = True, \
-                                     size = np.zeros(len(r_coord)).nbytes)
+                                    size = np.zeros(len(r_coord)).nbytes)
     s_theta = np.ndarray(len(r_coord), dtype = float, buffer = shm.buf)
     n_array_list = np.array_split(np.arange(len(r_coord)), cpu_count())
     with Manager():
@@ -117,3 +157,70 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
     shm.unlink()
 
     return s_theta
+
+def get_s_nodes(r_wall, z_wall):
+    """
+    Calculate the s coordinate from the r and z coordinates
+    of the wall.
+
+    Args:
+        r_wall: np.ndarray
+            The r coordinates of the wall
+        z_wall: np.ndarray
+            The z coordinates of the wall
+
+    Returns:
+        s_nodes: np.ndarray
+            The s_theta coordinates of the wall
+            nodes
+    """
+
+    dr = np.diff(r_wall)
+    dz = np.diff(z_wall)
+    ds = np.sqrt(dr**2 + dz**2)
+    s_nodes = np.zeros(len(r_wall))
+    s_nodes[1:] = np.cumsum(ds)
+
+    return s_nodes
+
+def get_rz_from_s_theta(s_theta, r_wall, z_wall):
+    """
+    Calculate the r and z coordinates from the s_theta
+    coordinates of the wall.
+
+    Args:
+        s_theta: np.ndarray
+            The s_theta coordinates of the wall
+        r_wall: np.ndarray
+            The r coordinates of the wall
+        z_wall: np.ndarray
+            The z coordinates of the wall
+
+    Returns:
+        r_array: np.ndarray
+            The r coordinates of the wall
+        z_array: np.ndarray
+            The z coordinates of the wall
+    """
+
+    dr = np.diff(r_wall)
+    dz = np.diff(z_wall)
+    ds = np.sqrt(dr**2 + dz**2)
+    s_nodes = np.zeros(len(r_wall))
+    s_nodes[1:] = np.cumsum(ds)
+
+    # if s < 0 or s > s_max then impose periodic condition to get a value which
+    # lies in the range [0, s_max].
+    s_theta_norms = s_theta % s_nodes[-1]
+
+    r_array = np.zeros(len(s_theta))
+    z_array = np.zeros(len(s_theta))
+
+    for i, s_theta_norm in enumerate(s_theta_norms):
+        nearest_node_index_min = np.max(np.where(s_nodes <= s_theta_norm))
+        index_float_part = (s_theta_norm - s_nodes[nearest_node_index_min]) \
+                         / ds[nearest_node_index_min]
+        r_array[i] = r_wall[nearest_node_index_min] + index_float_part * dr[nearest_node_index_min]
+        z_array[i] = z_wall[nearest_node_index_min] + index_float_part * dz[nearest_node_index_min]
+
+    return r_array, z_array
