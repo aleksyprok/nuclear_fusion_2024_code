@@ -46,3 +46,31 @@ def test_get_rz_from_s_theta():
     z_array_test = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 0.5])
     assert np.allclose(r_array, r_array_test, atol=1e-8)
     assert np.allclose(z_array, z_array_test, atol=1e-8)
+
+def test_get_rz_from_s_theta_funs():
+    """
+    Test the get_rz_from_s_theta_funs function.
+    """
+    r_wall = np.array([0, 1, 1, 0, 0])
+    z_wall = np.array([0, 0, 1, 1, 0])
+    r_fun, z_fun = wall.get_rz_from_s_theta_funs(r_wall, z_wall)
+    s_theta_array = np.array([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5])
+    r_array_test = np.array([0.0, 0.5, 1.0, 1.0, 1.0, 0.5, 0.0, 0.0])
+    z_array_test = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 0.5])
+    r_array = r_fun(s_theta_array)
+    z_array = z_fun(s_theta_array)
+    assert np.allclose(r_array, r_array_test, atol=1e-8)
+    assert np.allclose(z_array, z_array_test, atol=1e-8)
+
+def test_scalefactor1d():
+    """
+    Test the ScaleFactor1D class.
+    """
+    r_wall = np.array([1, 2, 2, 1, 1])
+    z_wall = np.array([0, 0, 1, 1, 0])
+    s_theta = np.array([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5])
+    r_array = np.array([1, 1.5, 2, 2, 2, 1.5, 1, 1])
+    sf = wall.ScaleFactor1D(r_wall, z_wall)
+    sf_array = sf(s_theta)
+    sf_array_test = 1 / (2 * np.pi * r_array)
+    assert np.allclose(sf_array, sf_array_test, atol=1e-8)

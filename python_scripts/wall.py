@@ -7,6 +7,7 @@ import numpy as np
 from shapely.geometry import Point, Polygon, LineString
 from shapely.ops import nearest_points
 from scipy.spatial.distance import cdist
+from scipy import interpolate
 
 class Wall:
     """
@@ -33,20 +34,21 @@ class Wall:
 
 
         self.cr, self.cz = calc_wall_centroid(r_wall, z_wall)
-        # self.s_nodes = get_s_nodes(r_wall, z_wall)
+        self.s_nodes = get_s_nodes(r_wall, z_wall)
 
-        # self.s_phi_min = 0
-        # self.s_phi_max = 2 * np.pi * self.cr
+        self.s_phi_min = 0
+        self.s_phi_max = 2 * np.pi * self.cr
 
-        # self.s_theta_min = 0
-        # self.s_theta_max = self.s_nodes[-1]
+        self.s_theta_min = 0
+        self.s_theta_max = self.s_nodes[-1]
 
-        # self.s_phi = np.linspace(self.s_phi_min, self.s_phi_max, num_grid_points)
-        # self.s_theta = np.linspace(self.s_theta_min, self.s_theta_max, num_grid_points)
-        # self.S_PHI, self.S_THETA = np.meshgrid(self.s_phi, self.s_theta)
+        self.s_phi = np.linspace(self.s_phi_min, self.s_phi_max, num_grid_points)
+        self.s_theta = np.linspace(self.s_theta_min, self.s_theta_max, num_grid_points)
+        self.s_phi_mg, self.s_theta_mg = np.meshgrid(self.s_phi, self.s_theta,
+                                                     indexing='ij')
 
-        # self.scale_factor_1d = scale_factor_1d_class(r_wall, z_wall)
-        # self.scale_factor_2d = scale_factor_2d_class(r_wall, z_wall)
+        self.scale_factor_1d = ScaleFactor1D(r_wall, z_wall)
+        self.scale_factor_2d = ScaleFactor2D(r_wall, z_wall)
 
 def calc_wall_centroid(r_wall, z_wall):
     """
@@ -224,3 +226,51 @@ def get_rz_from_s_theta(s_theta, r_wall, z_wall):
         z_array[i] = z_wall[nearest_node_index_min] + index_float_part * dz[nearest_node_index_min]
 
     return r_array, z_array
+
+def get_rz_from_s_theta_funs(r_wall, z_wall):
+    """
+    Return the interpolating functions for the r and z coordinates
+    """
+
+    s_nodes = get_s_nodes(r_wall, z_wall)
+
+    return interpolate.interp1d(s_nodes, r_wall, kind = 'linear'), \
+           interpolate.interp1d(s_nodes, z_wall, kind = 'linear')
+
+class ScaleFactor1D:
+    """
+    Class to calculate the scale factor as a function of s_theta.
+    This can be thought of as a Jacobian determinant to give a measure
+    of the size of an area element as function of s_theta.
+    """
+
+    def __init__(self, r_wall, z_wall):
+
+        self.s_nodes = get_s_nodes(r_wall, z_wall)
+        self.r_from_s_theta_fun, self.z_from_s_theta_fun = \
+            get_rz_from_s_theta_funs(r_wall, z_wall)
+
+    def __call__(self, s_theta):
+
+        r_array = self.r_from_s_theta_fun(s_theta % self.s_nodes[-1])
+        return 1 / (2 * np.pi * r_array)
+
+class ScaleFactor2D:
+    """
+    Class to calculate the scale factor as a function of s_theta.
+    This can be thought of as a Jacobian determinant to give a measure
+    of the size of an area element as function of s_theta.
+    """
+
+    def __init__(self, r_wall, z_wall):
+
+        self.s_nodes = get_s_nodes(r_wall, z_wall)
+        self.r_from_s_theta_fun, self.z_from_s_theta_fun = \
+            get_rz_from_s_theta_funs(r_wall, z_wall)
+        self.cr, self.cz = calc_wall_centroid(r_wall, z_wall)
+
+    def __call__(self, s_phi, s_theta):
+
+        r_array = self.r_from_s_theta_fun(s_theta % self.s_nodes[-1])
+        r_array = np.repeat(r_array[:, np.newaxis], len(s_phi), axis=1)
+        return self.cr / r_array
