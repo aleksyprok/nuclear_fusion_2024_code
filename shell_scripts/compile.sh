@@ -263,7 +263,7 @@ bscale=0
 bplasma=1
 rwm_control=1
 rmp=0
-bscales_unique=(1 10, 100, 1000)
+bscales_unique=(1 10 100 1000)
 for bscale in "${bscales_unique[@]}"; do
         ncoils+=("$ncoil")
         rcoils+=("$rcoil")
