@@ -11,6 +11,8 @@ input_data/SPP-001_wall.dat.
 Note that the log class and grid classes are standalone classes, but many of the methods in the
 stopped module require the log and grid classes.
 """
+import glob
+import os
 from typing import Optional
 from python_scripts import fstate, log
 
@@ -33,3 +35,21 @@ class Run:
         Update the Run object with information from the LOCUST .log file.
         """
         self.log = log.Log(self.log_path)
+
+def create_runs_list(dir_path):
+    """
+    Create a list of Run objects.
+
+    Args:
+        dir_path: str
+            The path to the directory containing the runs.
+    
+    Returns:
+        list
+            A list of Run objects.
+    """
+    runs = []
+    for file in glob.iglob(f'{dir_path}/**/FINAL_STATE*.dat', recursive=True):
+        tag = os.path.splitext(os.path.basename(file))[0].split('FINAL_STATE_')[-1]
+        runs.append(Run(os.path.dirname(file), tag))
+    return runs
