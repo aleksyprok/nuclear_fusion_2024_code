@@ -10,7 +10,7 @@ fortranformat==2.0.0
 importlib-resources==6.1.1
 iniconfig==2.0.0
 isort==5.13.2
-KDEpy==1.1.8
+KDEpy==1.1.9
 kiwisolver==1.4.5
 matplotlib==3.8.2
 mccabe==0.7.0
@@ -25,6 +25,7 @@ pyparsing==3.1.1
 pytest==8.0.0
 python-dateutil==2.8.2
 scipy==1.12.0
+shapely==2.0.3
 six==1.16.0
 tomli==2.0.1
 tomlkit==0.12.3

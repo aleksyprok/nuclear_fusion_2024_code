@@ -143,12 +143,13 @@ def main(spr_string, input_dir, output_dir, num_markers):
     psin, ti, te, ne, nd, nt = read_cdf_file(cdf_filename)
     gfile_path = os.path.join(input_dir, f'{spr_string}.eqdsk')
     gfile = get_gfile(gfile_path)
-    fusion_power, alpha_power = dt_fusion.calc_fusion_power(psin, nd, nt, ti, gfile)
-    print(f'Fusion power: {fusion_power:.3e} W')
-    print(f'Alpha power: {alpha_power:.3e} W')
     num_impurities = calculate_number_of_impurities(cdf_filename)
     impurity_names, zia, nim = get_impurity_data(cdf_filename, num_impurities)
     fd, ft, fim = calculate_ion_fractions(ne, nd, nt, nim)
+    fusion_power, alpha_power = dt_fusion.calc_fusion_power(psin, fd * ne, ft * ne,
+                                                            ti, gfile)
+    print(f'Fusion power: {fusion_power:.3e} W')
+    print(f'Alpha power: {alpha_power:.3e} W')
     ion_info_path = os.path.join(output_dir, f'ion_info_{spr_string}.dat')
     write_ion_info_file(ion_info_path, num_impurities, alpha_power, fd, ft, fim, zia,
                         impurity_names)
@@ -159,7 +160,8 @@ def main(spr_string, input_dir, output_dir, num_markers):
     # Generate markers uniformly across the plasma volume
     # with weights according to the DT reaction rate
     marker_coords = generate_alphas.gen_marker_coords(num_markers, gfile)
-    marker_weights = generate_alphas.gen_marker_weights(marker_coords, gfile, psin, nd, nt, ti)
+    marker_weights = generate_alphas.gen_marker_weights(marker_coords, gfile, psin, ne * fd,
+                                                        ne * ft, ti)
     e_alpha_std_coords = dt_fusion.calc_e_alpha_std(marker_coords, gfile, ti, psin)
     marker_velocities = generate_alphas.gen_marker_velocities(e_alpha_std_coords)
     marker_filename = f"{spr_string}_markers_{num_markers:d}.dat"
