@@ -28,7 +28,7 @@ This repository is organized as follows:
 
  `/setup.py` - Used for packaging and distributing the project, defining the package name, version, and included packages.
 
- ### Installation instructions:
+ ## Installation instructions:
 
   - Ensure `git` and `git-lfs` are installed on your machine.
   - Clone the repository. I recommend checking that the the large files have downloaded correctly by looking at the files in `input_data`.
