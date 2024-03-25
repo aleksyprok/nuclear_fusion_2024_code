@@ -159,7 +159,8 @@ def main(spr_string, input_dir, output_dir, num_markers):
     # Generate markers uniformly across the plasma volume
     # with weights according to the DT reaction rate
     marker_coords = generate_alphas.gen_marker_coords(num_markers, gfile)
-    marker_weights = generate_alphas.gen_marker_weights(marker_coords, gfile, psin, nd, nt, ti)
+    marker_weights = generate_alphas.gen_marker_weights(marker_coords, gfile, psin, ne * fd,
+                                                        ne * ft, ti)
     e_alpha_std_coords = dt_fusion.calc_e_alpha_std(marker_coords, gfile, ti, psin)
     marker_velocities = generate_alphas.gen_marker_velocities(e_alpha_std_coords)
     marker_filename = f"{spr_string}_markers_{num_markers:d}.dat"

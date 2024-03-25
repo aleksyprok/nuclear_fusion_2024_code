@@ -20,3 +20,12 @@ def test_run_init():
     assert test_run.fstate is None
     assert test_run.log_path == dir_path + f'/LOG_{tag}.out'
     assert test_run.fstate_path == dir_path + f'/FINAL_STATE_{tag}.dat'
+
+def test_create_runs_list():
+    """
+    Test the create_runs_list function.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles")
+    runs = run.create_runs_list(dir_path)
+    assert len(runs) == 7

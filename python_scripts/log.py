@@ -32,6 +32,12 @@ class Log:
         self.rmp_response: Optional[bool] = None
         self.rwm_gain: Optional[float] = None
         self.rwm_bscale: Optional[float] = None
+        # total_stopped_power_locust, total_stopped_power_locust_error, \
+        # max_energy_flux_locust, Pinj
+        self.total_stopped_power_string: Optional[str] = None
+        self.total_stopped_power: Optional[float] = None
+        self.total_stopped_power_error: Optional[float] = None
+        self.pinj: Optional[float] = None
         parsing_map = {
             ':locust_info : analytical TF ripple field':
                 AttributeParser('analytic_ripple',
@@ -42,6 +48,12 @@ class Log:
                 AttributeParser('ncoil', lambda line: int(line.split()[-1])),
             ':locust_info : TF_Rcoil':
                 AttributeParser('rcoil', lambda line: float(line.split()[-1])),
+            " :write_vtk   : Integrated power to PFCs           :":
+                AttributeParser('total_stopped_power_string',
+                                lambda line: " ".join(line.split()[-3:])),
+            "Ensemble power":
+                AttributeParser('pinj',
+                                lambda line: float(line.split()[-1][:-2])),
         }
 
         self.log_path = log_path
@@ -93,3 +105,9 @@ class Log:
                 self.rwm_gain = float(self.bplasma_file.split('G=')[1].split('_')[0])
             if 'bscale=' in self.bplasma_file:
                 self.rwm_bscale = float(self.bplasma_file.split('bscale=')[1].split('_')[0])
+        print(self.log_path)
+        if self.total_stopped_power_string.split()[1] == '+-':
+            self.total_stopped_power = float(self.total_stopped_power_string.split()[0])
+            self.total_stopped_power_error = float(self.total_stopped_power_string.split()[2][:-2])
+        else:
+            self.total_stopped_power = float(self.total_stopped_power_string.split()[2][:-2])

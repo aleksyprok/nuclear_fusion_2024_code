@@ -94,3 +94,23 @@ def test_log_init():
     assert log_ripple.rwm_bscale is None
     assert log_rmp.rwm_bscale is None
     assert log_rwm.rwm_bscale == 1
+
+    assert log_axisymmetric.total_stopped_power == 0.26120333
+    assert log_ripple.total_stopped_power == 0.27798763
+    assert log_rmp.total_stopped_power == 7.7370629
+    assert log_rwm.total_stopped_power == 0.26159607
+
+    assert log_axisymmetric.total_stopped_power_error == 0.0025217316
+    assert log_ripple.total_stopped_power_error == 0.0028677862
+    assert log_rmp.total_stopped_power_error == 0.043398268
+    assert log_rwm.total_stopped_power_error is None
+
+    # assert log_axisymmetric.max_energy_flux == 11.74194
+    # assert log_ripple.max_energy_flux == 4.61870
+    # assert log_rmp.max_energy_flux == 1.95909
+    # assert log_rwm.max_energy_flux == 11.74194
+
+    assert log_axisymmetric.pinj == 338
+    assert log_ripple.pinj == 338
+    assert log_rmp.pinj == 338
+    assert log_rwm.pinj == 338
