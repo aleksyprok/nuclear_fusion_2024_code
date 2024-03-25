@@ -13,12 +13,12 @@ def plot_total_flux_over_runs(runs_dir):
     which give slightly different results.
     """
 
-    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # runs_dir = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed")
     runs = run.create_runs_list(runs_dir)
     for run_i in runs:
         run_i.update_log()
-    
+
     print("len(runs) = ", len(runs))
 
     runs_axisymmetric = []
@@ -136,8 +136,27 @@ def plot_total_flux_over_runs(runs_dir):
     for run_i in rwm_runs:
         print(run_i.log.rwm_bscale)
 
+def plot_simulation_time_over_runs(runs_dir):
+    """
+    Plot the simulation time over all runs in runs_dir.
+    """
+
+    runs = run.create_runs_list(runs_dir)
+    for run_i in runs:
+        run_i.update_log()
+    simulation_times = np.array([])
+    for run_i in runs:
+        simulation_times = np.append(simulation_times, run_i.log.simulation_time)
+
+    fig, ax = plt.subplots()
+    ax.plot(simulation_times / 60**2)
+    ax.set_xlabel("Run")
+    ax.set_ylabel("Simulation time [h]")
+    ax.set_title("Simulation time over runs")
+
 if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    runs_directory = os.path.join(repository_path, "output_data", "FEC_2024_missing_31_45_processed")
+    runs_directory = os.path.join(repository_path, "output_data",
+                                  "FEC_2024_missing_31_45_processed")
     plot_total_flux_over_runs(runs_directory)
     plt.show()

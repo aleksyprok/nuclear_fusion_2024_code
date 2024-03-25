@@ -7,7 +7,7 @@ from python_scripts import log
 
 def test_log_init():
     """
-    Test the Log class initialisation.
+    Test the Log class initialization.
     """
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_path = os.path.join(repo_path, "input_data")
