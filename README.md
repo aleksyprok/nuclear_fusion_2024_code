@@ -31,7 +31,7 @@ This repository is organized as follows:
  ### Installation instructions:
 
   - Ensure `git` and `git-lfs` are installed on your machine.
-  - Clone the repository. I reccommend checking that the the large files have downlaoded correctly by looking at the files in `input_data`.
+  - Clone the repository. I recommend checking that the the large files have downloaded correctly by looking at the files in `input_data`.
   - To run the python scripts you need to have python3.9+ installed.
   - Setup a virtual environment with e.g. "python3 -m venv venv".
   - Activate the environment with e.g. "source venv/bin/activate"
@@ -58,7 +58,7 @@ to get the same version of the code. The LOCUST repo is stored on GitLab here:
 
 ### Step 4: Clone this repository
 
-Clone this repo to a directory of your choosing on CSD3. Make sure you have `git-lfs`, I load these modules in my `.bashrc` to ensure that I have `git-lfs`. Note that this also sets up `slurm` which you iwll need to run jobs:
+Clone this repo to a directory of your choosing on CSD3. Make sure you have `git-lfs`, I load these modules in my `.bashrc` to ensure that I have `git-lfs`. Note that this also sets up `slurm` which you will need to run jobs:
 ```
 module purge
 module load gcc/5
@@ -69,15 +69,16 @@ module load git-lfs-2.3.0-gcc-5.4.0-oktvmkw
 
 ### Step 5: Create output directories
 
-Create the file structure for LOCUST to output its files to. Your file strcuture needs to be:
+Create the file structure for LOCUST to output its files to. Your file structure needs to be:
 - `~/locust.STEP/Outputfiles`
 - `~/locust.STEP/InputFiles`
 - `~/locust.STEP/CacheFiles`
-I reccommend Using symbolic links to ensure you files are saved in e.g. `/rds/project/iris_vol2/rds-ukaea-ap001/` as you only have a limited amount of space in your home drive.
+
+I recommend using symbolic links to ensure you files are saved in e.g. `/rds/project/iris_vol2/rds-ukaea-ap001/` as you only have a limited amount of space in your home drive.
 
 ### Step 6: Compile the code.
 
-Navigate to `nuclear_fusion_2024_code/shell_scripts/compile.sh`. Edit the the file and ensure `device="csd3"` (assuming you are running the code on CSD3). Then create a session onthe GPU nodes with e.g.:
+Navigate to `nuclear_fusion_2024_code/shell_scripts/compile.sh`. Edit the the file and ensure `device="csd3"` (assuming you are running the code on CSD3). Then create a session on a GPU node with e.g.:
 ```
 sintr -t 36:0:0 -N1 -A UKAEA-AP001-GPU -p ampere --qos=INTR --gres=gpu:1
 ```
@@ -95,4 +96,4 @@ to
 #SBATCH --ntasks=124
 #SBATCH --array=0-123
 ```
-as sometime CSD3 won't let you execute so many jobs as a single array job. So you need to submit two seperate array jobs.
+as sometime CSD3 won't let you execute so many jobs as a single array job. So you need to submit two separate array jobs.
