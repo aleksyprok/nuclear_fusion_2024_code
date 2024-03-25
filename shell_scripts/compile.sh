@@ -317,10 +317,11 @@ $input_dir/"makefile_template" \
 $home_dir"/locust/makefile"
 SRC="ccxx,cudaxx\.x"
 DST="cc"$cc",cuda"$cuda
+echo "nohdf5 = "$nohdf5
 sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
 if [[ $nohdf5 == 1 ]]; then
-    SRC="-ltsdc++ -lhdf5_fortran -lhdf5"
-    DST="-ltsdc++"
+    SRC="-lstdc++ -lhdf5_fortran -lhdf5"
+    DST="-lstdc++"
     sed -i "s/$SRC/$DST/g" "$home_dir/locust/makefile"
 fi
 diff $input_dir/"makefile_template" "$home_dir/locust/makefile"
@@ -347,7 +348,6 @@ $home_dir"/locust."$tokamak"/InputFiles/."
 cd $home_dir"/locust"
 
 num_runs=${#rcoils[@]}
-num_runs=1
 for ((n=0; n<num_runs; n++)); do
 
     rcoil=${rcoils[$n]}
