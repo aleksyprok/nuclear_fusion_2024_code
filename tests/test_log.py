@@ -114,3 +114,8 @@ def test_log_init():
     assert log_ripple.pinj == 338
     assert log_rmp.pinj == 338
     assert log_rwm.pinj == 338
+
+    assert log_axisymmetric.simulation_time == 29869.8
+    assert log_ripple.simulation_time == 0.410031E+05
+    assert log_rmp.simulation_time == 0.369179E+05
+    assert log_rwm.simulation_time == 0.412703E+05
