@@ -154,9 +154,32 @@ def plot_simulation_time_over_runs(runs_dir):
     ax.set_ylabel("Simulation time [h]")
     ax.set_title("Simulation time over runs")
 
+def plot_axisymmetric_constant_zeff_vs_non_constant():
+    """
+    Plot the axisymmetric constant zeff vs the non-constant zeff.
+    """
+    repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    vary_zeff_dir = os.path.join(repository_path, "output_data", "FEC_2024_missing_31_45_processed",
+                                  "gpu-q-27")
+    vary_zeff_tag = "06-03-2024_23-28-10.025"
+    vary_zeff_run = run.Run(vary_zeff_dir, vary_zeff_tag)
+    cnst_zeff_dir = os.path.join(repository_path, "output_data", "FEC_2024_missing_31_45_processed",
+                                 "axisymmetric_fixed")
+    cnst_zeff_tag = "25-03-2024_11-17-39.992"
+    run_vary_zeff = run.Run(vary_zeff_dir, vary_zeff_tag)
+    run_cnst_zeff = run.Run(cnst_zeff_dir, cnst_zeff_tag)
+
+    run_vary_zeff.update_log()
+    run_cnst_zeff.update_log()
+
+    print(run_vary_zeff.log.total_stopped_power)
+    print(run_cnst_zeff.log.total_stopped_power)
+
 if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     runs_directory = os.path.join(repository_path, "output_data",
                                   "FEC_2024_missing_31_45_processed")
-    plot_total_flux_over_runs(runs_directory)
+    # plot_total_flux_over_runs(runs_directory)
+    # plot_simulation_time_over_runs(runs_directory)
+    plot_axisymmetric_constant_zeff_vs_non_constant()
     plt.show()
