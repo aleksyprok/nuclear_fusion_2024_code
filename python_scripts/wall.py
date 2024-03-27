@@ -11,7 +11,9 @@ from scipy import interpolate
 
 class Wall:
     """
-    Class for storing information about the wall.
+    Class for storing information about the wall. Specifically, converting from
+    cylindrical to coordinates at the wall to s_phi, s_theta wall coordiantes
+    and vice versa.
     """
     def __init__(self,
                  r_wall : np.ndarray,

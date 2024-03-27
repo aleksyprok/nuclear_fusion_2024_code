@@ -17,7 +17,7 @@ def test_run_init():
     assert test_run.dir_path == dir_path
     assert test_run.tag == tag
     assert test_run.log is None
-    assert test_run.fstate is None
+    assert test_run.markers is None
     assert test_run.log_path == dir_path + f'/LOG_{tag}.out'
     assert test_run.fstate_path == dir_path + f'/FINAL_STATE_{tag}.dat'
 

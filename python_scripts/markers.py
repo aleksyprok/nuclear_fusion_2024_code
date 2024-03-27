@@ -1,5 +1,5 @@
 """
-This file contains routines related to the Fstate class which stored inforamtion
+This file contains routines related to the Markers class which stored inforamtion
 from reading a LOCUST FINAL_STATE*.dat file.
 """
 import os
@@ -53,7 +53,7 @@ class ParticleGroup:
         self.vz0 = np.concatenate((self.vz0, data[:, 14]))
         self.weight = np.concatenate((self.weight, data[:, 15]))
 
-class Fstate:
+class Markers:
     """
     This class contains routines for updating a Run object with information from a
     LOCUST FINAL_STATE*.dat file.

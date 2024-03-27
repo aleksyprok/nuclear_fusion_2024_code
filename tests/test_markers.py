@@ -1,14 +1,15 @@
 """
-Test the fstate module.
+Test the markers module.
 """
 import os
-from python_scripts import fstate
+import numpy as np
+from python_scripts import markers
 
 def test_particle_group_init():
     """
     Test the ParticleGroup class initialization.
     """
-    test_particle_group = fstate.ParticleGroup()
+    test_particle_group = markers.ParticleGroup()
     assert test_particle_group.r.size < 1
     assert test_particle_group.phi.size < 1
     assert test_particle_group.z.size < 1
@@ -43,44 +44,40 @@ def test_particle_group_init():
 
 def test_particle_group_add_particles():
     """
-    Test the ParticleGroup class add_particle method.
+    Test the ParticleGroup class add_particles method.
     """
-    def test_particle_group_add_particles():
-        """
-        Test the ParticleGroup class add_particles method.
-        """
-        test_particle_group = fstate.ParticleGroup()
-        data = [
-            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0],
-            [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0]
-        ]
-        test_particle_group.add_particles(data)
-        assert test_particle_group.r == [1.0, 2.0]
-        assert test_particle_group.phi == [2.0, 3.0]
-        assert test_particle_group.z == [3.0, 4.0]
-        assert test_particle_group.vr == [4.0, 5.0]
-        assert test_particle_group.vphi == [5.0, 6.0]
-        assert test_particle_group.vz == [6.0, 7.0]
-        assert test_particle_group.t == [7.0, 8.0]
-        assert test_particle_group.s == [8.0, 9.0]
-        assert test_particle_group.particle_id == [9.0, 10.0]
-        assert test_particle_group.r0 == [10.0, 11.0]
-        assert test_particle_group.phi0 == [11.0, 12.0]
-        assert test_particle_group.z0 == [12.0, 13.0]
-        assert test_particle_group.vr0 == [13.0, 14.0]
-        assert test_particle_group.vphi0 == [14.0, 15.0]
-        assert test_particle_group.vz0 == [15.0, 16.0]
-        assert test_particle_group.weight == [16.0, 17.0]
+    test_particle_group = markers.ParticleGroup()
+    data = np.array([
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0],
+        [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0]
+    ])
+    test_particle_group.add_particles(data)
+    assert np.all(test_particle_group.r == np.array([1.0, 2.0]))
+    assert np.all(test_particle_group.phi == np.array([2.0, 3.0]))
+    assert np.all(test_particle_group.z == np.array([3.0, 4.0]))
+    assert np.all(test_particle_group.vr == np.array([4.0, 5.0]))
+    assert np.all(test_particle_group.vphi == np.array([5.0, 6.0]))
+    assert np.all(test_particle_group.vz == np.array([6.0, 7.0]))
+    assert np.all(test_particle_group.t == np.array([7.0, 8.0]))
+    assert np.all(test_particle_group.s == np.array([8.0, 9.0]))
+    assert np.all(test_particle_group.particle_id == np.array([9.0, 10.0]))
+    assert np.all(test_particle_group.r0 == np.array([10.0, 11.0]))
+    assert np.all(test_particle_group.phi0 == np.array([11.0, 12.0]))
+    assert np.all(test_particle_group.z0 == np.array([12.0, 13.0]))
+    assert np.all(test_particle_group.vr0 == np.array([13.0, 14.0]))
+    assert np.all(test_particle_group.vphi0 == np.array([14.0, 15.0]))
+    assert np.all(test_particle_group.vz0 == np.array([15.0, 16.0]))
+    assert np.all(test_particle_group.weight == np.array([16.0, 17.0]))
 
-def test_fstate_init():
+def test_markers_init():
     """
-    Test the Fstate class initialization.
+    Test the Markers class initialization.
     """
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_dir = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
                             "axisymmetric", "gpu-q-41")
     fstate_path = os.path.join(input_dir, "FINAL_STATE_13-12-2023_16-51-52.811.dat")
-    axisymmetric_fstate = fstate.Fstate(fstate_path)
+    axisymmetric_fstate = markers.Markers(fstate_path)
     assert axisymmetric_fstate.fstate_path == fstate_path
     assert len(axisymmetric_fstate.moving.r) == 18
     assert len(axisymmetric_fstate.thermal.r) == 482343

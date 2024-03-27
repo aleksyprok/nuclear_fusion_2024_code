@@ -6,16 +6,16 @@ The run object has four classes as attributes:
 - log: contains information obtained by reading the LOG*.out file
 - wall: contains routines from converting from R, Phi, Z coordinates on the wall to
         wall coordinates, s_phi, s_theta.
-- ptcles: contains routines related to the particle groups from reading the FINAL_STATE*.dat file.
+- markers: contains routines related to the particle groups from reading the FINAL_STATE*.dat file.
 - flux: contains routines related to the energy flux on the PFCs.
-Note that the log wall and ptcles classes are standalone classes, but many of the methods in the
-flux class require the log, wall and ptcles classes.
-Note that to save memory we will often set the ptcles attribute to None.
+Note that the log wall and markers classes are standalone classes, but many of the methods in the
+flux class require the log, wall and markers classes.
+Note that to save memory we will often set the markers attribute to None.
 """
 import glob
 import os
 from typing import Optional
-from python_scripts import fstate, log
+from python_scripts import log, markers
 
 class Run:
     """
@@ -24,7 +24,7 @@ class Run:
     """
     def __init__(self, dir_path, tag):
         self.log: Optional[log.Log] = None
-        self.fstate: Optional[fstate.Fstate] = None
+        self.markers: Optional[markers.Markers] = None
         self.dir_path = dir_path
         self.tag = tag
         self.log_path = self.dir_path + f'/LOG_{self.tag}.out'
@@ -35,6 +35,12 @@ class Run:
         Update the Run object with information from the LOCUST .log file.
         """
         self.log = log.Log(self.log_path)
+
+    def update_markers(self):
+        """
+        Update the Run object with information from the LOCUST FINAL_STATE*.dat file.
+        """
+        self.markers = markers.Markers(self.fstate_path)
 
 def create_runs_list(dir_path):
     """
