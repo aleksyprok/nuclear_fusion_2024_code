@@ -7,7 +7,7 @@ from python_scripts import log
 
 def test_log_init():
     """
-    Test the Log class initialisation.
+    Test the Log class initialization.
     """
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_path = os.path.join(repo_path, "input_data")
@@ -114,3 +114,8 @@ def test_log_init():
     assert log_ripple.pinj == 338
     assert log_rmp.pinj == 338
     assert log_rwm.pinj == 338
+
+    assert log_axisymmetric.simulation_time == 29869.8
+    assert log_ripple.simulation_time == 0.410031E+05
+    assert log_rmp.simulation_time == 0.369179E+05
+    assert log_rwm.simulation_time == 0.412703E+05

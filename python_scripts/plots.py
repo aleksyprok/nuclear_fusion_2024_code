@@ -4,7 +4,7 @@ This module contains routines for plotting results.
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from python_scripts import run
+from python_scripts import run, my_gfile_reader
 
 def plot_total_flux_over_runs(runs_dir):
     """
@@ -13,12 +13,12 @@ def plot_total_flux_over_runs(runs_dir):
     which give slightly different results.
     """
 
-    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # runs_dir = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed")
     runs = run.create_runs_list(runs_dir)
     for run_i in runs:
         run_i.update_log()
-    
+
     print("len(runs) = ", len(runs))
 
     runs_axisymmetric = []
@@ -47,7 +47,7 @@ def plot_total_flux_over_runs(runs_dir):
         j = np.where(ncoils == run_n.log.ncoil)[0][0]
         total_fluxes_ratio[i, j] = run_n.log.total_stopped_power \
                                  / run_n.log.pinj * 100
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     for j, ncoil in enumerate(ncoils):
         ax.plot(rcoils, total_fluxes_ratio[:, j],
                 label=str(ncoil))
@@ -136,8 +136,83 @@ def plot_total_flux_over_runs(runs_dir):
     for run_i in rwm_runs:
         print(run_i.log.rwm_bscale)
 
+def plot_simulation_time_over_runs(runs_dir):
+    """
+    Plot the simulation time over all runs in runs_dir.
+    """
+
+    runs = run.create_runs_list(runs_dir)
+    for run_i in runs:
+        run_i.update_log()
+    simulation_times = np.array([])
+    for run_i in runs:
+        simulation_times = np.append(simulation_times, run_i.log.simulation_time)
+
+    _, ax = plt.subplots()
+    ax.plot(simulation_times / 60**2)
+    ax.set_xlabel("Run")
+    ax.set_ylabel("Simulation time [h]")
+    ax.set_title("Simulation time over runs")
+
+def plot_axisymmetric_constant_zeff_vs_non_constant():
+    """
+    Plot the axisymmetric constant zeff vs the non-constant zeff.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    vary_zeff_dir = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed",
+                                  "gpu-q-27")
+    vary_zeff_tag = "06-03-2024_23-28-10.025"
+    cnst_zeff_dir = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed",
+                                 "axisymmetric_fixed_processed")
+    cnst_zeff_tag = "26-03-2024_11-47-55.495"
+    run_vary_zeff = run.Run(vary_zeff_dir, vary_zeff_tag)
+    run_cnst_zeff = run.Run(cnst_zeff_dir, cnst_zeff_tag)
+
+    run_vary_zeff.update_log()
+    run_cnst_zeff.update_log()
+
+    print(run_vary_zeff.log.total_stopped_power / run_vary_zeff.log.pinj * 100)
+    print(run_cnst_zeff.log.total_stopped_power / run_vary_zeff.log.pinj * 100)
+    print(run_vary_zeff.log.total_stopped_power_error / run_vary_zeff.log.pinj * 100)
+    print(run_cnst_zeff.log.total_stopped_power_error / run_vary_zeff.log.pinj * 100)
+
+def plot_locust_lcfs():
+
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    locust_lcfs_path = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed",
+                                    "axisymmetric_fixed", "LCFS_a41a0963f57c8700f7938b847734f21c.dat")
+    gfile_path = os.path.join(repo_path, "input_data", "SPR-045-16.eqdsk")
+    gfile = my_gfile_reader.getGfile(gfile_path)
+    gfile_14_path = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed",
+                                 "axisymmetric_fixed", "SPR-045-14.eqdsk")
+    gfile_14 = my_gfile_reader.getGfile(gfile_14_path)
+
+    dat = np.loadtxt(locust_lcfs_path, skiprows=1, max_rows=1200)
+    theta = dat.ravel()
+
+    dat = np.loadtxt(locust_lcfs_path, skiprows=1202, max_rows=1)
+    r0 = dat[0]
+    z0 = dat[1]
+
+    dat = np.loadtxt(locust_lcfs_path, skiprows=1203)
+    rminor = np.sqrt(dat.ravel())
+
+    r_locust = r0 + rminor * np.cos(theta)
+    z_locust= z0 + rminor * np.sin(theta)
+
+    _, ax = plt.subplots()
+    ax.plot(gfile.R_bnd, gfile.Z_bnd)
+    ax.plot(r_locust,z_locust)
+    ax.plot(gfile_14.R_bnd, gfile_14.Z_bnd)
+    ax.set_aspect('equal')
+
+
 if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    runs_directory = os.path.join(repository_path, "output_data", "FEC_2024_missing_31_45_processed")
-    plot_total_flux_over_runs(runs_directory)
+    runs_directory = os.path.join(repository_path, "output_data",
+                                  "FEC_2024_missing_31_45_processed")
+    # plot_total_flux_over_runs(runs_directory)
+    # plot_simulation_time_over_runs(runs_directory)
+    # plot_axisymmetric_constant_zeff_vs_non_constant()
+    plot_locust_lcfs()
     plt.show()

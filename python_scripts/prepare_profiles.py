@@ -135,6 +135,10 @@ def get_gfile(gfile_path):
 def main(spr_string, input_dir, output_dir, num_markers):
     """
     Main function.
+
+    Note that LOCUST assumes a constant Zeff so for consistency we will
+    also use a constant Zeff. Namely, we use the Zeff at the magnetic
+    axis.
     """
     start_time = time.time()
 

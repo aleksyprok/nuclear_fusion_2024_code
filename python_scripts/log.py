@@ -38,6 +38,7 @@ class Log:
         self.total_stopped_power: Optional[float] = None
         self.total_stopped_power_error: Optional[float] = None
         self.pinj: Optional[float] = None
+        self.simulation_time = None
         parsing_map = {
             ':locust_info : analytical TF ripple field':
                 AttributeParser('analytic_ripple',
@@ -54,6 +55,9 @@ class Log:
             "Ensemble power":
                 AttributeParser('pinj',
                                 lambda line: float(line.split()[-1][:-2])),
+            "....... finishing ....... : time":
+                AttributeParser('simulation_time',
+                                lambda line: float(line.split()[-5][:-1])),
         }
 
         self.log_path = log_path

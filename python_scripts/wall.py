@@ -1,5 +1,5 @@
 """
-Module contains the routines for parameterizing the wall.
+Module contains the routines to parameterize the wall.
 """
 
 from multiprocessing import Process, Manager, cpu_count, shared_memory
