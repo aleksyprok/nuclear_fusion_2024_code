@@ -164,16 +164,18 @@ def plot_axisymmetric_constant_zeff_vs_non_constant():
     vary_zeff_tag = "06-03-2024_23-28-10.025"
     vary_zeff_run = run.Run(vary_zeff_dir, vary_zeff_tag)
     cnst_zeff_dir = os.path.join(repository_path, "output_data", "FEC_2024_missing_31_45_processed",
-                                 "axisymmetric_fixed")
-    cnst_zeff_tag = "25-03-2024_11-17-39.992"
+                                 "axisymmetric_fixed_processed")
+    cnst_zeff_tag = "26-03-2024_11-47-55.495"
     run_vary_zeff = run.Run(vary_zeff_dir, vary_zeff_tag)
     run_cnst_zeff = run.Run(cnst_zeff_dir, cnst_zeff_tag)
 
     run_vary_zeff.update_log()
     run_cnst_zeff.update_log()
 
-    print(run_vary_zeff.log.total_stopped_power)
-    print(run_cnst_zeff.log.total_stopped_power)
+    print(run_vary_zeff.log.total_stopped_power / run_vary_zeff.log.pinj * 100)
+    print(run_cnst_zeff.log.total_stopped_power / run_vary_zeff.log.pinj * 100)
+    print(run_vary_zeff.log.total_stopped_power_error / run_vary_zeff.log.pinj * 100)
+    print(run_cnst_zeff.log.total_stopped_power_error / run_vary_zeff.log.pinj * 100)
 
 if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
