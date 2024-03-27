@@ -2,11 +2,12 @@
 This file contains the routines used to generate the initial position and velocity of the alpha
 particles.
 
-At the moment, this file contains only routines to genrate markers uniformly across the plasma
-volume and we have put the routines to generate markers from a KDE in a seperate file, but the
+At the moment, this file contains only routines to generate markers uniformly across the plasma
+volume and we have put the routines to generate markers from a KDE in a separate file, but the
 plan is to combine the two in the future.
 """
 import numpy as np
+from matplotlib.path import Path
 from python_scripts import dt_fusion
 
 def gen_marker_coords(num_markers, gfile):
@@ -35,13 +36,18 @@ def gen_marker_coords(num_markers, gfile):
         z_coords = np.random.uniform(low=z_min, high=z_max,
                                      size=num_markers * 2)
         # remove markers outside LCFS
-        psin_values = (gfile.PsiSpline(r_coords, z_coords, grid=False) - gfile.simag) \
-                    / (gfile.sibry - gfile.simag)
-        indices = np.where((0 <= psin_values) & (psin_values <= 1) &
-                           (r_min <= r_coords) & (r_coords <= r_max) &
-                           (z_min <= z_coords) & (z_coords <= z_max))[0]
-        r_coords = r_coords[indices]
-        z_coords = z_coords[indices]
+        polygon_path = Path(np.column_stack((gfile.R_bnd, gfile.Z_bnd)))
+        coords = np.column_stack((r_coords, z_coords))
+        inside_polygon = polygon_path.contains_points(coords)
+        r_coords = r_coords[inside_polygon]
+        z_coords = z_coords[inside_polygon]
+        # psin_values = (gfile.PsiSpline(r_coords, z_coords, grid=False) - gfile.simag) \
+        #             / (gfile.sibry - gfile.simag)
+        # indices = np.where((0 <= psin_values) & (psin_values <= 1) &
+        #                    (r_min <= r_coords) & (r_coords <= r_max) &
+        #                    (z_min <= z_coords) & (z_coords <= z_max))[0]
+        # r_coords = r_coords[indices]
+        # z_coords = z_coords[indices]
     r_coords = r_coords[:num_markers]
     z_coords = z_coords[:num_markers]
     phi_sample = np.random.uniform(low=0, high=2 * np.pi, size=num_markers)
