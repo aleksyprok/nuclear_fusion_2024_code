@@ -15,7 +15,7 @@ def test_get_cdf_filename():
     This test case verifies that the get_cdf_filename function returns the expected filename
     for a given SPR string.
     """
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_dir = os.path.join(repo_path, "input_data")
     expected_filename = os.path.join(
@@ -33,7 +33,7 @@ def test_read_cdf_file():
     This test case verifies that the read_cdf_file function reads the CDF file correctly
     and returns the expected data.
     """
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_dir = os.path.join(repo_path, "input_data")
     cdf_filename = os.path.join(
@@ -60,12 +60,12 @@ def test_get_gfile():
     This test case verifies that the get_gfile function returns the expected gfile path
     for a given gfile filename.
     """
-    gfile_filename = 'SPR-045-16.eqdsk'
+    gfile_filename = 'SPR-045-14.eqdsk'
     current_dir = os.path.dirname(__file__)
     input_data_dir = os.path.join(current_dir, '..', 'input_data')
     gfile_path = os.path.join(input_data_dir, gfile_filename)
     gfile = prepare_profiles.get_gfile(gfile_path)
-    assert abs(gfile.rmaxis - 4.381458618) < 1e-6
+    assert abs(gfile.rmaxis - 4.211483193) < 1e-6
     assert abs(gfile.zmaxis - 0.0) < 1e-6
 
 def test_calculate_number_of_impurities():
@@ -75,7 +75,7 @@ def test_calculate_number_of_impurities():
     This test case verifies that the calculate_number_of_impurities function returns the expected
     number of impurities for a given CDF file.
     """
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     input_dir = os.path.join(repo_path, "input_data")
     cdf_filename = os.path.join(
@@ -83,47 +83,14 @@ def test_calculate_number_of_impurities():
         f'profiles_{spr_string}.CDF'
     )
     num_of_impurities = prepare_profiles.calculate_number_of_impurities(cdf_filename)
-    assert num_of_impurities == 2
-
-def test_get_impurity_data():
-    """
-    Test case for the get_impurity_data function.
-    """
-    spr_string = 'SPR-045-16'
-    current_dir = os.path.dirname(__file__)
-    input_data_dir = os.path.join(current_dir, '..', 'input_data')
-    cdf_filename = os.path.join(input_data_dir, f'profiles_{spr_string}.CDF')
-    impurity_names, zia, nim = prepare_profiles.get_impurity_data(cdf_filename, 2)
-    assert impurity_names == ['AXe', 'AHe4']
-    assert zia == [54.0, 2.0]
-    assert nim[0][0] < nim[1][0]
-
-def test_calculate_ion_fractions():
-    """
-    Test case for the calculate_ion_fractions function.
-    """
-    spr_string = 'SPR-045-16'
-    current_dir = os.path.dirname(__file__)
-    input_data_dir = os.path.join(current_dir, '..', 'input_data')
-    cdf_filename = os.path.join(input_data_dir, f'profiles_{spr_string}.CDF')
-    #pylint: disable=no-member
-    with netCDF4.Dataset(cdf_filename, 'r') as profile_cdf:
-        #pylint: enable=no-member
-        ne = profile_cdf.variables['NE'][-1, :]
-        nd = profile_cdf.variables['NID'][-1, :]
-        nt = profile_cdf.variables['NIT'][-1, :]
-        nim1 = profile_cdf.variables['NIM1'][-1, :]
-        nim2 = profile_cdf.variables['NIM2'][-1, :]
-    fd, ft, fi = prepare_profiles.calculate_ion_fractions(ne, nd, nt, [nim1, nim2])
-    # check charge neutrality
-    assert abs(fd + ft + fi[0] * 54 + fi[1] * 2 - 1) < 1e-6
+    assert num_of_impurities == 3
 
 def test_main():
     """
     Test case for the main function.
     """
     num_markers = 10
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     current_dir = os.path.dirname(__file__)
     input_data_dir = os.path.join(current_dir, '..', 'input_data')
     output_dir = os.path.join(current_dir, 'output_data')

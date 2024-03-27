@@ -14,7 +14,7 @@ def test_gen_marker_coords():
     coordinates with the correct shape.
     """
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    gfile_path = os.path.join(repo_path, "input_data", 'SPR-045-16.eqdsk')
+    gfile_path = os.path.join(repo_path, "input_data", 'SPR-045-14.eqdsk')
     num_markers = 1000
     gfile = my_gfile_reader.getGfile(gfile_path)
     marker_coords = generate_alphas.gen_marker_coords(num_markers, gfile)
@@ -60,11 +60,11 @@ def test_gen_marker_weights():
     weights with the correct shape.
     """
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    gfile_path = os.path.join(repo_path, "input_data", 'SPR-045-16.eqdsk')
+    gfile_path = os.path.join(repo_path, "input_data", 'SPR-045-14.eqdsk')
     input_dir = os.path.join(repo_path, "input_data")
     output_dir = os.path.join(repo_path, "tests", "output_plots")
     os.makedirs(output_dir, exist_ok=True)
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     num_markers = 10
     gfile = my_gfile_reader.getGfile(gfile_path)
     cdf_filename = prepare_profiles.get_cdf_filename(spr_string, input_dir)
@@ -131,11 +131,11 @@ def test_gen_marker_velocities():
     velocities with the correct shape and distribution.
     """
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    gfile_path = os.path.join(repo_path, "input_data", 'SPR-045-16.eqdsk')
+    gfile_path = os.path.join(repo_path, "input_data", 'SPR-045-14.eqdsk')
     input_dir = os.path.join(repo_path, "input_data")
     output_dir = os.path.join(repo_path, "tests", "output_plots")
     os.makedirs(output_dir, exist_ok=True)
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     num_markers = 1000
     gfile = my_gfile_reader.getGfile(gfile_path)
     cdf_filename = prepare_profiles.get_cdf_filename(spr_string, input_dir)

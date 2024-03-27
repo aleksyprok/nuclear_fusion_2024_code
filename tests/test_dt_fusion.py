@@ -11,7 +11,7 @@ def test_calc_fusion_power():
     Function to test the calc_fusion_power function.
     """
 
-    spr_string = 'SPR-045-16'
+    spr_string = 'SPR-045-14'
     current_dir = os.path.dirname(__file__)
     input_data_dir = os.path.join(current_dir, '..', 'input_data')
     cdf_filename = os.path.join(input_data_dir, f'profiles_{spr_string}.CDF')
@@ -26,4 +26,4 @@ def test_calc_fusion_power():
     gfile_path = os.path.join(input_data_dir, gfile_filename)
     gfile = my_gfile_reader.getGfile(gfile_path)
     fusion_power, _ = dt_fusion.calc_fusion_power(psin, nd, nt, ti, gfile)
-    assert abs(fusion_power - 1.66e9) < 0.02e9
+    assert abs(fusion_power - 1.562e9) < 0.02e9
