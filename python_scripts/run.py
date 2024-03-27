@@ -15,7 +15,7 @@ Note that to save memory we will often set the markers attribute to None.
 import glob
 import os
 from typing import Optional
-from python_scripts import log, markers
+from python_scripts import log, markers, my_gfile_reader, wall
 
 class Run:
     """
@@ -24,7 +24,9 @@ class Run:
     """
     def __init__(self, dir_path, tag):
         self.log: Optional[log.Log] = None
+        self.wall: Optional[wall.Wall] = None
         self.markers: Optional[markers.Markers] = None
+        self.gfile: Optional[my_gfile_reader.getGfile] = None
         self.dir_path = dir_path
         self.tag = tag
         self.log_path = self.dir_path + f'/LOG_{self.tag}.out'
@@ -36,11 +38,23 @@ class Run:
         """
         self.log = log.Log(self.log_path)
 
+    def update_wall(self, wall_path):
+        """
+        Update the Run object with information from the LOCUST .log file.
+        """
+        self.wall = wall.Wall(wall_path)
+
     def update_markers(self):
         """
         Update the Run object with information from the LOCUST FINAL_STATE*.dat file.
         """
         self.markers = markers.Markers(self.fstate_path)
+
+    def update_gfile(self, gfile_path):
+        """
+        Update the Run object with information from the eqdsk file.
+        """
+        self.gfile = my_gfile_reader.getGfile(gfile_path)
 
 def create_runs_list(dir_path):
     """

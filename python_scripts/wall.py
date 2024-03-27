@@ -16,27 +16,24 @@ class Wall:
     and vice versa.
     """
     def __init__(self,
-                 r_wall : np.ndarray,
-                 z_wall : np.ndarray,
-                 num_grid_points : int,
+                 wall_path: str,
                  special_nodes=(0, 1, 2, 3)):
         """
         Args:
-            r_wall: array of the r coordinates of the wall
+            r: array of the r coordinates of the wall
             z_wall: array of the z coordinates of the wall
-            num_grid_points: number of grid points to use for the kdes.
             special_nodes: list of the special node indices, we use this to
                            mark where boundaries of the outer wall
                            upper divertor, inner wall and lower divertor.
         """
-        self.r_wall = r_wall
-        self.z_wall = z_wall
-        self.num_grid_points = num_grid_points
+        wall_rz = np.loadtxt(wall_path)
+        self.r = wall_rz[:, 0]
+        self.z = wall_rz[:, 1]
         self.special_nodes = special_nodes
 
 
-        self.cr, self.cz = calc_wall_centroid(r_wall, z_wall)
-        self.s_nodes = get_s_nodes(r_wall, z_wall)
+        self.cr, self.cz = calc_wall_centroid(self.r, self.z)
+        self.s_nodes = get_s_nodes(self.r, self.z)
 
         self.s_phi_min = 0
         self.s_phi_max = 2 * np.pi * self.cr
@@ -44,13 +41,8 @@ class Wall:
         self.s_theta_min = 0
         self.s_theta_max = self.s_nodes[-1]
 
-        self.s_phi = np.linspace(self.s_phi_min, self.s_phi_max, num_grid_points)
-        self.s_theta = np.linspace(self.s_theta_min, self.s_theta_max, num_grid_points)
-        self.s_phi_mg, self.s_theta_mg = np.meshgrid(self.s_phi, self.s_theta,
-                                                     indexing='ij')
-
-        self.scale_factor_1d = ScaleFactor1D(r_wall, z_wall)
-        self.scale_factor_2d = ScaleFactor2D(r_wall, z_wall)
+        self.scale_factor_1d = ScaleFactor1D(self.r, self.z)
+        self.scale_factor_2d = ScaleFactor2D(self.r, self.z)
 
 def calc_wall_centroid(r_wall, z_wall):
     """
