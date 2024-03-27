@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.10']
+        python-version: ['3.9']
 
     steps:
       - name: Install Git LFS
@@ -33,8 +33,8 @@ jobs:
       - name: Pull specific LFS files
         run: |
           git lfs pull --include="input_data/LOCUST_SPR-045-14_OutputFiles/*"
-          git lfs pull --include="input_data/profiles_SPR-045-16.CDF"
-          git lfs pull --include="input_data/SPR-045-16.eqdsk"
+          git lfs pull --include="input_data/profiles_SPR-045-14.CDF"
+          git lfs pull --include="input_data/SPR-045-14.eqdsk"
       
       - name: Set up Python
         uses: actions/setup-python@v5
