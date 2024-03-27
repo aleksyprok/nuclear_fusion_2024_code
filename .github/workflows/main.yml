@@ -35,7 +35,7 @@ jobs:
           git lfs pull --include="input_data/LOCUST_SPR-045-14_OutputFiles/*"
           git lfs pull --include="input_data/profiles_SPR-045-16.CDF"
           git lfs pull --include="input_data/SPR-045-16.eqdsk"
-          it lfs pull --include="input_data/SPP-001_wall.dat"
+          git lfs pull --include="input_data/SPP-001_wall.dat"
       
       - name: Set up Python
         uses: actions/setup-python@v5
