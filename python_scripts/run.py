@@ -2,14 +2,15 @@
 This module contains routines for updating a Run object which stores information
 about a LOCUST run.
 
-The run object contain three nested classes, log, stopped and grid.
-The log class contains information obtained by reading the LOG*.out file.
-The stopped class contains information obtained by reading the FINAL_STATE*.dat file
-and only stores information about particles that have hit the wall.
-The wall class contains information obtained by reading the wall 2D wall files, e.g.
-input_data/SPP-001_wall.dat.
-Note that the log class and grid classes are standalone classes, but many of the methods in the
-stopped module require the log and grid classes.
+The run object has four classes as attributes:
+- log: contains information obtained by reading the LOG*.out file
+- wall: contains routines from converting from R, Phi, Z coordinates on the wall to
+        wall coordinates, s_phi, s_theta.
+- ptcles: contains routines related to the particle groups from reading the FINAL_STATE*.dat file.
+- flux: contains routines related to the energy flux on the PFCs.
+Note that the log wall and ptcles classes are standalone classes, but many of the methods in the
+flux class require the log, wall and ptcles classes.
+Note that to save memory we will often set the ptcles attribute to None.
 """
 import glob
 import os
@@ -28,7 +29,6 @@ class Run:
         self.tag = tag
         self.log_path = self.dir_path + f'/LOG_{self.tag}.out'
         self.fstate_path = self.dir_path + f'/FINAL_STATE_{self.tag}.dat'
-        self.einj = None
 
     def update_log(self):
         """
