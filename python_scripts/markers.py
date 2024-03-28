@@ -5,6 +5,7 @@ from reading a LOCUST FINAL_STATE*.dat file.
 import os
 import time
 import numpy as np
+from python_scripts import wall
 
 class ParticleGroup:
     """
@@ -28,6 +29,8 @@ class ParticleGroup:
         self.vphi0 = np.array([])
         self.vz0 = np.array([])
         self.weight = np.array([])
+        self.s_phi = np.array([])
+        self.s_theta = np.array([])
 
     def add_particles(self, data):
         """
@@ -87,3 +90,43 @@ class Markers:
             self.stopped.add_particles(data)
         elif status_code == -3:
             self.unresolved.add_particles(data)
+
+    # def calculate_s_phi_s_theta(self, r_wall, z_wall):
+def get_s_phi_s_theta_from_r_z_phi(run):
+    """
+    Calculates and returns the s_phi and s_theta coordinates based on the r, z, and phi coordinates
+    of the markers and the wall. This function relies on specific attributes of the `run` object.
+
+    The `run` object must have the following attributes:
+    - run.markers.stopped.r: np.ndarray
+        The r coordinates of the markers.
+    - run.markers.stopped.phi: np.ndarray
+        The phi coordinates of the markers.
+    - run.markers.stopped.z: np.ndarray
+        The z coordinates of the markers.
+    - run.wall.r: np.ndarray
+        The r coordinates of the wall.
+    - run.wall.z: np.ndarray
+        The z coordinates of the wall.
+
+    This function computes and assigns new values to the following attributes of `run`:
+    - run.markers.stopped.s_phi: np.ndarray
+        The computed s_phi coordinates.
+    - run.markers.stopped.s_theta: np.ndarray
+        The computed s_theta coordinates.
+
+    Args:
+        run: A custom object
+            An object representing the run data, containing markers and wall information.
+
+    Returns:
+        None
+    """
+    run.markers.stopped.s_phi = wall.get_s_phi_from_phi(run.markers.stopped.phi,
+                                                run.wall.r, run.wall.z)
+    run.markers.stopped.s_theta = wall.get_s_theta_from_rz(run.markers.stopped.r,
+                                                   run.markers.stopped.z,
+                                                   run.wall.r,
+                                                   run.wall.z)
+
+    # def remap_phi_coords

@@ -49,6 +49,8 @@ class Run:
         Update the Run object with information from the LOCUST FINAL_STATE*.dat file.
         """
         self.markers = markers.Markers(self.fstate_path)
+        if self.wall is not None:
+            markers.get_s_phi_s_theta_from_r_z_phi(self)
 
     def update_gfile(self, gfile_path):
         """

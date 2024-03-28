@@ -154,6 +154,26 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
 
     return s_theta
 
+def get_s_phi_from_phi(phi, r_wall, z_wall):
+    """
+    Calculate the s_phi coordinate from the phi coordinate
+    of the wall.
+
+    Args:
+        phi: np.ndarray
+            The phi coordinate markers that hit the wall
+        r_wall: np.ndarray
+            The r coordinates of the wall
+        z_wall: np.ndarray
+            The z coordinates of the wall
+
+    Returns:
+        s_phi: np.ndarray
+            The s_phi coordinates
+    """
+    cr, _ = calc_wall_centroid(r_wall, z_wall)
+    return cr * (phi % (2 * np.pi))
+
 def get_s_nodes(r_wall, z_wall):
     """
     Calculate the s coordinate from the r and z coordinates

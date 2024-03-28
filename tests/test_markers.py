@@ -3,7 +3,7 @@ Test the markers module.
 """
 import os
 import numpy as np
-from python_scripts import markers
+from python_scripts import markers, run
 
 def test_particle_group_init():
     """
@@ -26,21 +26,6 @@ def test_particle_group_init():
     assert test_particle_group.vphi0.size < 1
     assert test_particle_group.vz0.size < 1
     assert test_particle_group.weight.size < 1
-    # assert not test_particle_group.phi
-    # assert not test_particle_group.z
-    # assert not test_particle_group.vr
-    # assert not test_particle_group.vphi
-    # assert not test_particle_group.vz
-    # assert not test_particle_group.t
-    # assert not test_particle_group.s
-    # assert not test_particle_group.particle_id
-    # assert not test_particle_group.r0
-    # assert not test_particle_group.phi0
-    # assert not test_particle_group.z0
-    # assert not test_particle_group.vr0
-    # assert not test_particle_group.vphi0
-    # assert not test_particle_group.vz0
-    # assert not test_particle_group.weight
 
 def test_particle_group_add_particles():
     """
@@ -99,3 +84,19 @@ def test_markers_init():
     assert abs(axisymmetric_markers.stopped.vphi0[0] + 8432840.0) < 1e-5
     assert abs(axisymmetric_markers.stopped.vz0[0] + 5514400.0) < 1e-5
     assert abs(axisymmetric_markers.stopped.weight[0] - 23987000000.0) < 1e-5
+
+def test_get_s_phi_s_theta_from_r_z_phi():
+    """
+    Test the get_s_phi_s_theta_from_r_z_phi function.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
+                            "axisymmetric", "gpu-q-41")
+    tag = '13-12-2023_16-51-52.811'
+    test_run = run.Run(dir_path, tag)
+    wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
+    test_run.update_wall(wall_path)
+    test_run.update_markers()
+    markers.get_s_phi_s_theta_from_r_z_phi(test_run)
+    assert len(test_run.markers.stopped.s_phi) == 41927
+    assert len(test_run.markers.stopped.s_theta) == 41927
