@@ -75,7 +75,8 @@ def periodic_kde_1d(x, x_min, x_max, weights, hx,
     Parameters
     ----------
     x : array
-        1D array of x coordinates
+        1D array of x coordinates (corresponding to the final position of markers
+        on the wall of the tokamak.)
     x_min : float
         Minimum x coordinate
     x_max : float
