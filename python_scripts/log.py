@@ -37,7 +37,7 @@ class Log:
         self.total_stopped_power_string: Optional[str] = None
         self.total_stopped_power: Optional[float] = None
         self.total_stopped_power_error: Optional[float] = None
-        self.pinj: Optional[float] = None
+        self.pinj: Optional[float] = None # Total injected power [MW]
         self.simulation_time = None
         parsing_map = {
             ':locust_info : analytical TF ripple field':
