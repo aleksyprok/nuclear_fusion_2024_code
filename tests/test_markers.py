@@ -67,6 +67,7 @@ def test_markers_init():
     assert len(axisymmetric_markers.moving.r) == 18
     assert len(axisymmetric_markers.thermal.r) == 482343
     assert len(axisymmetric_markers.stopped.r) == 41927
+    assert len(axisymmetric_markers.all.r) == 524288
     assert len(axisymmetric_markers.unresolved.r) == 0
     assert abs(axisymmetric_markers.stopped.r[0] - 5.77736) < 1e-5
     assert abs(axisymmetric_markers.stopped.phi[0] + 1.56278) < 1e-5
