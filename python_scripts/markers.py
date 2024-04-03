@@ -123,10 +123,8 @@ def get_s_phi_s_theta_from_r_z_phi(run):
         None
     """
     run.markers.stopped.s_phi = wall.get_s_phi_from_phi(run.markers.stopped.phi,
-                                                run.wall.r, run.wall.z)
+                                                        run.wall.r, run.wall.z)
     run.markers.stopped.s_theta = wall.get_s_theta_from_rz(run.markers.stopped.r,
-                                                   run.markers.stopped.z,
-                                                   run.wall.r,
-                                                   run.wall.z)
-
-    # def remap_phi_coords
+                                                           run.markers.stopped.z,
+                                                           run.wall.r,
+                                                           run.wall.z)
