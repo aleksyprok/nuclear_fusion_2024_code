@@ -63,6 +63,7 @@ class Markers:
     """
     def __init__(self, fstate_path):
         self.fstate_path = fstate_path
+        self.all = ParticleGroup()
         self.moving = ParticleGroup()
         self.thermal = ParticleGroup()
         self.stopped = ParticleGroup()
@@ -76,6 +77,7 @@ class Markers:
 
     def _process_file(self):
         data = np.loadtxt(self.fstate_path)
+        self.all.add_particles(data)
         # Assuming the data format is consistent and each row has 16 columns
         for status_code in [-14, -9, -5, -3]:
             filtered_data = data[data[:, 7] == status_code]  # Assuming status is in the 8th column
