@@ -133,7 +133,7 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
     s_theta_nodes[1:] = np.cumsum(ds[:-1])
 
     shm = shared_memory.SharedMemory(create = True, \
-                                    size = np.zeros(len(r_coord)).nbytes)
+                                     size = np.zeros(len(r_coord)).nbytes)
     s_theta = np.ndarray(len(r_coord), dtype = float, buffer = shm.buf)
     n_array_list = np.array_split(np.arange(len(r_coord)), cpu_count())
     with Manager():
