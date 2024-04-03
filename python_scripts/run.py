@@ -15,7 +15,7 @@ Note that to save memory we will often set the markers attribute to None.
 import glob
 import os
 from typing import Optional
-from python_scripts import log, markers, my_gfile_reader, wall
+from python_scripts import flux, log, markers, my_gfile_reader, wall
 
 class Run:
     """
@@ -27,6 +27,7 @@ class Run:
         self.wall: Optional[wall.Wall] = None
         self.markers: Optional[markers.Markers] = None
         self.gfile: Optional[my_gfile_reader.getGfile] = None
+        self.flux: Optional[flux.Flux] = None
         self.dir_path = dir_path
         self.tag = tag
         self.log_path = self.dir_path + f'/LOG_{self.tag}.out'
@@ -57,6 +58,19 @@ class Run:
         Update the Run object with information from the eqdsk file.
         """
         self.gfile = my_gfile_reader.getGfile(gfile_path)
+
+    def update_flux(self,
+                    num_grid_points=1000):
+        """
+        Update the Run object with the flux class based on
+        desired num_grid_points, num_h_theta_1d, num_h_theta_2d,
+        num_h_phi.
+        """
+        self.flux = flux.Flux(num_grid_points=num_grid_points)
+        if self.wall is not None:
+            self.flux.calc_s_theta_s_phi(self)
+        if self.markers is not None:
+            self.flux.calc_total_energy(self)
 
 def create_runs_list(dir_path):
     """
