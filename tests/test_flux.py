@@ -36,6 +36,7 @@ def test_calc_energy_flux_1d():
     dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
                             "axisymmetric", "gpu-q-41")
     output_dir = os.path.join(repo_path, 'tests', 'output_plots')
+    os.makedirs(output_dir, exist_ok=True)
     tag = '13-12-2023_16-51-52.811'
     test_run = run.Run(dir_path, tag)
     test_run.init_log()
