@@ -86,7 +86,7 @@ Then run `./compile.sh` to compile the code.
 
 ### Step 7: Run the code.
 
-After the code has finished compiling. Edit `nuclear_fusion_2024_code/shell_scripts/run.sh` and ensure the setting are ok. You may need to edit the lines that read
+After the code has finished compiling. Edit `nuclear_fusion_2024_code/shell_scripts/run.sh` and ensure the settings are ok. You may need to edit the lines that read
 ```
 #SBATCH --ntasks=248
 #SBATCH --array=0-247
