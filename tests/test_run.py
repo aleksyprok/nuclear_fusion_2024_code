@@ -40,12 +40,12 @@ def test_stopped_scatter():
                             "axisymmetric", "gpu-q-41")
     tag = '13-12-2023_16-51-52.811'
     test_run = run.Run(dir_path, tag)
-    test_run.update_log()
+    test_run.init_log()
     wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
-    test_run.update_wall(wall_path)
+    test_run.init_wall(wall_path)
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
-    test_run.update_gfile(gfile_path)
-    test_run.update_markers()
+    test_run.init_gfile(gfile_path)
+    test_run.init_markers()
 
     fig, ax = plt.subplots()
     ax.scatter(test_run.markers.stopped.r, test_run.markers.stopped.z)
