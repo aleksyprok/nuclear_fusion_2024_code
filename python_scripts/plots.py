@@ -210,9 +210,9 @@ def plot_locust_lcfs():
 if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     runs_directory = os.path.join(repository_path, "output_data",
-                                  "FEC_2024_missing_31_45_processed")
+                                  "FEC_2024")
     plot_total_flux_over_runs(runs_directory)
     plot_simulation_time_over_runs(runs_directory)
     # plot_axisymmetric_constant_zeff_vs_non_constant()
-    plot_locust_lcfs()
+    # plot_locust_lcfs()
     plt.show()
