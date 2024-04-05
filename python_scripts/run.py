@@ -87,5 +87,7 @@ def create_runs_list(dir_path):
     runs = []
     for file in glob.iglob(f'{dir_path}/**/FINAL_STATE*.dat', recursive=True):
         tag = os.path.splitext(os.path.basename(file))[0].split('FINAL_STATE_')[-1]
-        runs.append(Run(os.path.dirname(file), tag))
+        run_i = Run(os.path.dirname(file), tag)
+        run_i.init_log()
+        runs.append(run_i)
     return runs
