@@ -5,6 +5,7 @@ It also contains information about the distribution of the energy flux on the PF
 
 from typing import Optional
 import numpy as np
+from scipy.ndimage import minimum_filter
 from python_scripts import pkde
 
 class Flux:
@@ -16,8 +17,16 @@ class Flux:
         self.s_theta: Optional[np.ndarray] = None
         self.s_phi: Optional[np.ndarray] = None
         self.total_energy: Optional[float] = None # Store the total energy flux in MW on the PFCs
+        self.h_phi: Optional[float] = None
         self.h_theta_1d: Optional[float] = None
+        self.h_theta_2d: Optional[float] = None
         self.energy_1d: Optional[np.ndarray] = None
+        self.energy_2d: Optional[np.ndarray] = None
+        self.h_phi_array: Optional[np.ndarray] = None
+        self.h_theta_1d_array: Optional[np.ndarray] = None
+        self.h_theta_2d_array: Optional[np.ndarray] = None
+        self.amise_1d: Optional[np.ndarray] = None
+        self.amise_2d: Optional[np.ndarray] = np.array([[None]])
 
 def calc_s_theta_s_phi(run):
     """
@@ -105,3 +114,130 @@ def calc_energy_flux_1d(run,
 
     run.flux.energy_1d = energy_flux
     run.flux.h_theta_1d = h_theta_1d
+
+def calc_energy_flux_2d(run,
+                        h_phi=None,
+                        h_theta_2d=None):
+    """
+    Calculate the energy flux on the PFCs using the distribution of the
+    particle flux on the PFCs.
+
+    Args:
+        run: Run object
+            Needs to have been initialized with the flux class attribute,
+            also the wall and markers.stopped attributes need to
+            have been populated. The flux object needs to have been
+            initialized with the s_phi and s_theta attributes, num_grid_points
+            and the h_phi and h_theta_2d attributes (if h_theta_2d is None).
+
+    Returns:
+        Flux object
+            The Flux object with new attributes, namely the energy_fun_2d
+            and energy_arr_2d which give the energy flux along the wall
+            in MW/m^2.
+
+    """
+
+    if h_theta_2d is None:
+        h_theta_2d = run.flux.h_theta_2d
+    if h_phi is None:
+        h_phi = run.flux.h_phi
+
+    kde_fun = pkde.periodic_kde_2d(run.markers.stopped.s_phi,
+                                   run.markers.stopped.s_theta,
+                                   run.wall.s_phi_min,
+                                   run.wall.s_phi_max,
+                                   run.wall.s_theta_min,
+                                   run.wall.s_theta_max,
+                                   run.markers.stopped.weight,
+                                   h_phi,
+                                   h_theta_2d,
+                                   num_grid_points=run.flux.num_grid_points)
+    kde_array = kde_fun(run.flux.s_phi, run.flux.s_theta)
+    # Calculate energy flux
+    energy_flux = kde_array * run.flux.total_energy
+    run.flux.energy_2d = energy_flux
+    run.flux.h_theta_2d = h_theta_2d
+    run.flux.h_phi = h_phi
+
+def calc_optimum_bandwidth_1d(run, h_theta_1d_array=None):
+    """
+    Calculate the optimal bandwidth for the 1D KDE. Note that we assume
+    that a unique optimum bandwidth is possible.
+
+    Args:
+        run: Run object
+            Needs to have been initialized with the flux class attribute,
+            also the wall and markers.stopped attributes need to
+            have been populated. The flux object needs to have been
+            initialized with the s_theta attribute and num_grid_points
+
+        h_theta_1d_array: array
+            The set of bandwidths to be tested for.
+
+    Returns:
+        h_theta_1d: float
+            The optimal bandwidth
+        amise_array: array
+            The AMISE for each of the bandwidths.
+    """
+    if h_theta_1d_array is None:
+        h_theta_1d_array = run.flux.h_theta_1d_array
+    amise_array = pkde.calc_amise_1d_array(run.markers.stopped.s_theta,
+                                           run.flux.s_theta,
+                                           run.markers.stopped.weight,
+                                           h_theta_1d_array,
+                                           num_grid_points=run.flux.num_grid_points)
+    h_theta_1d = h_theta_1d_array[np.argmin(amise_array)]
+    run.flux.amise_1d = amise_array
+    run.flux.h_theta_1d = h_theta_1d
+
+def calc_optimum_bandwidth_2d(run, h_phi_array=None, h_theta_2d_array=None):
+    """
+    Calculate the optimal bandwidth for the 2D KDE. Note that we assume
+    that a unique optimum bandwidth combination is possible. Note we take
+    the optimum bandwidth to be the minima of the AMISE with the largest
+    h_phi^2 + h_theta_2d^2.
+
+    Args:
+        run: Run object
+            Needs to have been initialized with the flux class attribute,
+            also the wall and markers.stopped attributes need to
+            have been populated. The flux object needs to have been
+            initialized with the s_phi and s_theta attributes, num_grid_points
+            and the h_phi and h_theta_2d attributes (if h_theta_2d is None).
+
+        h_phi_array: array
+            The set of bandwidths to be tested for.
+        h_theta_2d_array: array
+            The set of bandwidths to be tested for.
+
+    Returns:
+        h_phi: float
+            The optimal bandwidth
+        h_theta_2d: float
+            The optimal bandwidth
+        amise_array: array
+            The AMISE for each of the bandwidths.
+    """
+    if h_phi_array is None:
+        h_phi_array = run.flux.h_phi_array
+    if h_theta_2d_array is None:
+        h_theta_2d_array = run.flux.h_theta_2d_array
+    amise_array = pkde.calc_amise_2d_array(run.markers.stopped.s_phi,
+                                           run.markers.stopped.s_theta,
+                                           run.flux.s_phi,
+                                           run.flux.s_theta,
+                                           run.markers.stopped.weight,
+                                           h_phi_array,
+                                           h_theta_2d_array,
+                                           num_grid_points=run.flux.num_grid_points)
+    # min_indices = np.unravel_index(np.argmin(amise_array), amise_array.shape)
+    minima = minimum_filter(amise_array, size=3, mode = 'nearest') == amise_array
+    min_h_coords = np.argwhere(minima)
+    min_h_coord = min_h_coords[np.argmin(min_h_coords[:, 0]**2 + min_h_coords[:, 1]**2)]
+    h_phi = h_phi_array[min_h_coord[1]]
+    h_theta_2d = h_theta_2d_array[min_h_coord[0]]
+    run.flux.amise_2d = amise_array
+    run.flux.h_phi = h_phi
+    run.flux.h_theta_2d = h_theta_2d
