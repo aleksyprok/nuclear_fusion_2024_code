@@ -11,22 +11,16 @@ if [[ $device == "csd3" ]]; then
     account="ukaea-ap001-GPU"
     partition="ampere"
     time="36:00:00"
-    user_id="ir-prok1"
-    root_dir="/home"
     ngpu=4
 elif [[ $device == "leonardo" ]]; then
     account="FUAL7_UKAEA_ML"
     partition="boost_fua_prod"
     time="24:00:00"
-    user_id="aprokopy"
-    root_dir="/leonardo/home/userexternal"
     ngpu=4
 elif [[ $device == "sdcc" ]]; then
     account="default"
     partition="gpu_p100_titan"
     time="99-00:00:00"
-    user_id="prokopa"
-    root_dir="/home/ITER"
     ngpu=1
 else
     echo "Invalid device."
@@ -77,8 +71,6 @@ export CFLAGS="-I$HDF5_DIR/include"
 export FFLAGS="-I$HDF5_DIR/include"
 export LDFLAGS="-L$HDF5_DIR/lib"
 
-echo "OMP_NUM_THREADS="\$OMP_NUM_THREADS
-
 ulimit -s 2000000
 export OMP_STACKSIZE=102400
 export CUDA_CACHE_DISABLE=1
@@ -87,8 +79,9 @@ echo "OMP_NUM_THREADS="\$OMP_NUM_THREADS
 
 # Clear CacheFiles
 echo $HOSTNAME
-rm -vf $root_dir"/"$user_id"/locust."$tokamak"/CacheFiles/"\$HOSTNAME"/"*
-$root_dir"/"$user_id"/locust/locust_"$run_name"_"\$SLURM_ARRAY_TASK_ID
+rm -vf $HOME"/locust."$tokamak"/CacheFiles/"\$HOSTNAME"/"*
+# Execute Locust
+$HOME"/locust/locust_"$run_name"_"\$SLURM_ARRAY_TASK_ID
 EOF
 
 sbatch job.sbatch
