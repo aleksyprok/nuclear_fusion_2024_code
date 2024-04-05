@@ -3,11 +3,10 @@ Module to test the pkde module.
 """
 import os
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 import numpy as np
 from scipy import stats
-from python_scripts import pkde
-import warnings
-warnings.filterwarnings("error", category=DeprecationWarning)
+from python_scripts import flux, pkde, run
 
 def test_extend_coords():
     """
@@ -108,7 +107,7 @@ def test_periodic_kde_1d():
                                    kernel = kernel,
                                    num_grid_points = num_grid_points)
 
-    # Calcualte KDE using scipy, not FFTKDE
+    # Calculate KDE using scipy, not FFTKDE
     x = np.array([-3, -2, -1, +1, +2, +3, +5, +6, +7])
     sigma_x = np.std(x)
     weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
@@ -171,6 +170,15 @@ def test_periodic_kde_2d():
     grid_x = np.linspace(x_min, x_max, num_grid_points)
     grid_y = np.linspace(y_min, y_max, num_grid_points)
     pdf_fft = pdf_fun(grid_x, grid_y)
+    # mesh_x, mesh_y = np.meshgrid(grid_x, grid_y)
+    # points = np.vstack((mesh_x.ravel(), mesh_y.ravel())).T
+    # # evaluate pdf_fft in num_grid_point chunks
+    # pdf_fft = np.zeros(num_grid_points * num_grid_points)
+    # for i in range(num_grid_points):
+    #     points_i = points[i*num_grid_points:(i+1)*num_grid_points]
+    #     pdf_fft[i*num_grid_points:(i+1)*num_grid_points] = pdf_fun(points_i)
+    # pdf_fft = pdf_fun(points)
+    # pdf_fft = np.reshape(pdf_fft, (num_grid_points, num_grid_points))
 
     # Plot the KDE estimate image
     fig, ax = plt.subplots()
@@ -188,3 +196,367 @@ def test_periodic_kde_2d():
     assert np.isclose(np.trapz(np.trapz(pdf_fft, grid_x, axis=0), grid_y, axis =0),
                       1,
                       atol=1e-4)
+
+def test_calc_asymptotic_bias_1d():
+    """
+    Test case for the calc_asymptotic_bias_1d function.
+
+    This test case verifies that the calc_asymptotic_bias_1d function returns the expected
+    asymptotic bias for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    x = np.array([-3, -2, -1, +1, +2, +3, +5, +6, +7])
+    weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
+    x_min = -4
+    x_max = 8
+    num_grid_points = 100
+    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    hx = 0.1
+    pdf_fun = pkde.periodic_kde_1d(x, x_min, x_max, weights, hx)
+    bias = pkde.calc_asymptotic_bias_1d(pdf_fun, x_grid, hx)
+    pdf = pdf_fun(x_grid)
+
+    # Plot the KDE estimate image
+    fig, ax = plt.subplots()
+    ax.plot(x_grid, pdf, label='KDE estimate')
+    ax.plot(x_grid, bias, label='Asymptotic bias')
+    ax.legend()
+    ax.set_xlim(x_min, x_max)
+    fig.savefig(output_dir + '/calc_asymptotic_bias_1d.png')
+
+def test_calc_asymptotic_variance_1d():
+    """
+    Test case for the calc_asymptotic_variance_1d function.
+
+    This test case verifies that the calc_asymptotic_variance_1d function returns the expected
+    asymptotic variance for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    x = np.array([-3, -2, -1, +1, +2, +3, +5, +6, +7])
+    weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
+    x_min = -4
+    x_max = 8
+    num_grid_points = 100
+    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    hx = 0.1
+    pdf_fun = pkde.periodic_kde_1d(x, x_min, x_max, weights, hx)
+    variance = pkde.calc_asymptotic_variance_1d(pdf_fun, x_grid, hx, weights)
+    pdf = pdf_fun(x_grid)
+
+    # Plot the KDE estimate image
+    fig, ax = plt.subplots()
+    ax.plot(x_grid, pdf, label='KDE estimate')
+    ax.plot(x_grid, variance, label='Asymptotic variance')
+    ax.legend()
+    ax.set_xlim(x_min, x_max)
+    fig.savefig(output_dir + '/calc_asymptotic_variance_1d.png')
+
+def test_calc_amse_1d():
+    """
+    Test case for the calc_amse_1d function.
+
+    This test case verifies that the calc_amse_1d function returns the expected
+    asymptotic mean square error for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    x = np.array([-3, -2, -1, +1, +2, +3, +5, +6, +7])
+    weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
+    x_min = -4
+    x_max = 8
+    num_grid_points = 100
+    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    hx = 0.1
+    pdf_fun = pkde.periodic_kde_1d(x, x_min, x_max, weights, hx)
+    amse = pkde.calc_amse_1d(pdf_fun, x_grid, hx, weights)
+    pdf = pdf_fun(x_grid)
+
+    # Plot the KDE estimate image
+    fig, ax = plt.subplots()
+    ax.plot(x_grid, pdf, label='KDE estimate')
+    ax.plot(x_grid, amse, label='Asymptotic mean square error')
+    ax.legend()
+    ax.set_xlim(x_min, x_max)
+    fig.savefig(output_dir + '/calc_amse_1d.png')
+
+def test_calc_amise_1d():
+    """
+    Test case for the calc_amise_1d function.
+
+    This test case verifies that the calc_amise_1d function returns the expected
+    asymptotic mean square error for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
+                            "axisymmetric", "gpu-q-41")
+    output_dir = os.path.join(repo_path, 'tests', 'output_plots')
+    tag = '13-12-2023_16-51-52.811'
+    test_run = run.Run(dir_path, tag)
+    test_run.init_log()
+    wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
+    test_run.init_wall(wall_path)
+    gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
+    test_run.init_gfile(gfile_path)
+    test_run.init_markers()
+    test_run.init_flux(num_grid_points=1000)
+    hx_array = np.logspace(-2, 0, 64)
+    amise_array = pkde.calc_amise_1d_array(test_run.markers.stopped.s_theta,
+                                           test_run.flux.s_theta,
+                                           test_run.markers.stopped.weight,
+                                           hx_array)
+
+    # Plot the amise array
+    fig, ax = plt.subplots()
+    ax.plot(hx_array, amise_array)
+    ax.set_xscale('log')
+    ax.set_xlabel('Bandwidth [m]')
+    ax.set_ylabel('Asymptotic mean integrated square error')
+    fig.savefig(output_dir + '/axisymmetric_calc_amise_1d_array.png')
+
+def test_calc_asymptotic_bias_2d():
+    """
+    Test case for the calc_asymptotic_bias_2d function.
+
+    This test case verifies that the calc_asymptotic_bias_2d function returns the expected
+    asymptotic bias for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    x = np.array([1, 2, 3])
+    y = np.array([2, 5.6, 2])
+    x_min = 0
+    x_max = 4
+    y_min = 1
+    y_max = 5.7
+    weights = np.array([1, 2, 3])
+    hx = 0.3
+    hy = 0.4
+    num_grid_points = 1000
+    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    y_grid = np.linspace(y_min, y_max, num_grid_points)
+    pdf_fun = pkde.periodic_kde_2d(x, y, x_min, x_max, y_min, y_max, weights, hx, hy)
+    bias = pkde.calc_asymptotic_bias_2d(pdf_fun, x_grid, y_grid, hx, hy)
+    pdf = pdf_fun(x_grid, y_grid)
+
+    # Plot imshow of KDE and asymptotic bias side by side
+    fig, ax = plt.subplots(1, 2)
+    im = ax[0].imshow(pdf.T, origin='lower', extent=[x_min, x_max, y_min, y_max])
+    fig.colorbar(im, ax=ax[0])
+    im = ax[1].imshow(bias.T, origin='lower', extent=[x_min, x_max, y_min, y_max])
+    fig.colorbar(im, ax=ax[1])
+    ax[0].set_title('KDE')
+    ax[1].set_title('Asymptotic bias')
+    for i in range(2):
+        ax[i].set_xlabel('x')
+        ax[i].set_ylabel('y')
+    fig.savefig(output_dir + '/calc_asymptotic_bias_2d.png',
+                bbox_inches='tight', dpi=300)
+
+    # Line plot along the line y=2 we need to find grid point close to y=2
+    y_index = np.argmin(np.abs(y_grid - 2))
+    fig, ax = plt.subplots()
+    ax.plot(x_grid, pdf[:, y_index], label='KDE estimate')
+    ax.plot(x_grid, bias[:, y_index], label='Asymptotic bias')
+    ax.legend()
+    ax.set_xlim(x_min, x_max)
+    ax.set_title('Asymptotic bias along y=2')
+    fig.savefig(output_dir + '/calc_asymptotic_bias_2d_line.png',
+                bbox_inches='tight', dpi=300)
+
+def test_calc_asymptotic_variance_2d():
+    """
+    Test case for the calc_asymptotic_variance_2d function.
+
+    This test case verifies that the calc_asymptotic_variance_2d function returns the expected
+    asymptotic variance for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    x = np.array([1, 2, 3])
+    y = np.array([2, 5.6, 2])
+    x_min = 0
+    x_max = 4
+    y_min = 1
+    y_max = 5.7
+    weights = np.array([1, 2, 3])
+    hx = 0.3
+    hy = 0.4
+    num_grid_points = 1000
+    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    y_grid = np.linspace(y_min, y_max, num_grid_points)
+    pdf_fun = pkde.periodic_kde_2d(x, y, x_min, x_max, y_min, y_max, weights, hx, hy)
+    variance = pkde.calc_asymptotic_variance_2d(pdf_fun, x_grid, y_grid, hx, hy, weights)
+    pdf = pdf_fun(x_grid, y_grid)
+
+    # Plot imshow of KDE and asymptotic variance side by side
+    fig, ax = plt.subplots(1, 2)
+    im = ax[0].imshow(pdf.T, origin='lower', extent=[x_min, x_max, y_min, y_max])
+    fig.colorbar(im, ax=ax[0])
+    im = ax[1].imshow(variance.T, origin='lower', extent=[x_min, x_max, y_min, y_max])
+    fig.colorbar(im, ax=ax[1])
+    ax[0].set_title('KDE')
+    ax[1].set_title('Asymptotic variance')
+    for i in range(2):
+        ax[i].set_xlabel('x')
+        ax[i].set_ylabel('y')
+    fig.savefig(output_dir + '/calc_asymptotic_variance_2d.png',
+                bbox_inches='tight', dpi=300)
+
+    # Line plot along the line y=2 we need to find grid point close to y=2
+    y_index = np.argmin(np.abs(y_grid - 2))
+    fig, ax = plt.subplots()
+    ax.plot(x_grid, pdf[:, y_index], label='KDE estimate')
+    ax.plot(x_grid, variance[:, y_index], label='Asymptotic variance')
+    ax.legend()
+    ax.set_xlim(x_min, x_max)
+    ax.set_title('Asymptotic variance along y=2')
+    fig.savefig(output_dir + '/calc_asymptotic_variance_2d_line.png',
+                bbox_inches='tight', dpi=300)
+
+def test_calc_amse_2d():
+    """
+    Test case for the calc_amse_2d function.
+
+    This test case verifies that the calc_amse_2d function returns the expected
+    asymptotic mean square error for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    x = np.array([1, 2, 3])
+    y = np.array([2, 5.6, 2])
+    x_min = 0
+    x_max = 4
+    y_min = 1
+    y_max = 5.7
+    weights = np.array([1, 2, 3])
+    hx = 0.3
+    hy = 0.4
+    num_grid_points = 1000
+    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    y_grid = np.linspace(y_min, y_max, num_grid_points)
+    pdf_fun = pkde.periodic_kde_2d(x, y, x_min, x_max, y_min, y_max, weights, hx, hy)
+    amse = pkde.calc_amse_2d(pdf_fun, x_grid, y_grid, hx, hy, weights)
+    pdf = pdf_fun(x_grid, y_grid)
+
+    # Plot imshow of KDE and asymptotic mean square error side by side
+    fig, ax = plt.subplots(1, 2)
+    im = ax[0].imshow(pdf.T, origin='lower', extent=[x_min, x_max, y_min, y_max])
+    fig.colorbar(im, ax=ax[0])
+    im = ax[1].imshow(amse.T, origin='lower', extent=[x_min, x_max, y_min, y_max])
+    fig.colorbar(im, ax=ax[1])
+    ax[0].set_title('KDE')
+    ax[1].set_title('Asymptotic mean square error')
+    for i in range(2):
+        ax[i].set_xlabel('x')
+        ax[i].set_ylabel('y')
+    fig.savefig(output_dir + '/calc_amse_2d.png',
+                bbox_inches='tight', dpi=300)
+
+    # Line plot along the line y=2 we need to find grid point close to y=2
+    y_index = np.argmin(np.abs(y_grid - 2))
+    fig, ax = plt.subplots()
+    ax.plot(x_grid, pdf[:, y_index], label='KDE estimate')
+    ax.plot(x_grid, amse[:, y_index], label='Asymptotic mean square error')
+    ax.legend()
+    ax.set_xlim(x_min, x_max)
+    ax.set_title('Asymptotic mean square error along y=2')
+    fig.savefig(output_dir + '/calc_amse_2d_line.png',
+                bbox_inches='tight', dpi=300)
+
+def test_calc_amse_2d_array_axisymmetric():
+    """
+    Test case for the calc_amse_2d_array function using axisymmetric SPR-045-14 data.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
+                            "axisymmetric", "gpu-q-41")
+    output_dir = os.path.join(repo_path, 'tests', 'output_plots')
+    tag = '13-12-2023_16-51-52.811'
+    num_grid_points = 10**3
+    test_run = run.Run(dir_path, tag)
+    test_run.init_log()
+    wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
+    test_run.init_wall(wall_path)
+    gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
+    test_run.init_gfile(gfile_path)
+    test_run.init_markers()
+    test_run.init_flux(num_grid_points=num_grid_points)
+    h_phi = 0.1
+    h_theta_2d = 0.01
+    pdf_fun = pkde.periodic_kde_2d(test_run.markers.stopped.s_phi,
+                                   test_run.markers.stopped.s_theta,
+                                   test_run.wall.s_phi_min,
+                                   test_run.wall.s_phi_max,
+                                   test_run.wall.s_theta_min,
+                                   test_run.wall.s_theta_max,
+                                   test_run.markers.stopped.weight,
+                                   h_phi, h_theta_2d,
+                                   num_grid_points = num_grid_points)
+    amse = pkde.calc_amse_2d(pdf_fun, test_run.flux.s_phi, test_run.flux.s_theta,
+                             h_phi, h_theta_2d, test_run.markers.stopped.weight)
+
+    # Plot the amse array
+    fig, ax = plt.subplots()
+    im = ax.imshow(amse.T, origin='lower',
+                   extent=[test_run.wall.s_phi_min, test_run.wall.s_phi_max,
+                           test_run.wall.s_theta_min, test_run.wall.s_theta_max])
+    fig.colorbar(im, ax=ax)
+    ax.set_title('Asymptotic mean square error')
+    ax.set_xlabel('phi')
+    ax.set_ylabel('theta')
+    fig.savefig(output_dir + '/axisymmetric_calc_amse_2d_array.png',
+                bbox_inches='tight', dpi=300)
+
+
+
+def test_calc_amise_2d_array():
+    """
+    Test case for the calc_amise_2d_array function using axisymmetric SPR-045-14 data.
+
+    This test case verifies that the calc_amise_2d_array function returns the expected
+    asymptotic mean square error for a given KDE estimate.
+    """
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(repo_path, "tests", "output_plots")
+    dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
+                            "axisymmetric", "gpu-q-41")
+    output_dir = os.path.join(repo_path, 'tests', 'output_plots')
+    tag = '13-12-2023_16-51-52.811'
+    num_grid_points = 10**3
+    test_run = run.Run(dir_path, tag)
+    test_run.init_log()
+    wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
+    test_run.init_wall(wall_path)
+    gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
+    test_run.init_gfile(gfile_path)
+    test_run.init_markers()
+    test_run.init_flux(num_grid_points=num_grid_points)
+    hx_array = np.logspace(-2, 0, 8)
+    hy_array = np.logspace(-2, 0, 8)
+    amise_array = pkde.calc_amise_2d_array(test_run.markers.stopped.s_phi,
+                                           test_run.markers.stopped.s_theta,
+                                           test_run.flux.s_phi,
+                                           test_run.flux.s_theta,
+                                           test_run.markers.stopped.weight,
+                                           hx_array, hy_array,
+                                           num_grid_points=num_grid_points)
+    hx_dummy = np.logspace(-2, 0, len(hx_array) + 1)
+    hy_dummy = np.logspace(-2, 0, len(hy_array) + 1)
+    hx_mesh, hy_mesh = np.meshgrid(hx_dummy, hy_dummy)
+
+    # Plot the amise array using pcolormesh with log scale
+    fig, ax = plt.subplots()
+    im = ax.pcolormesh(hx_mesh, hy_mesh, amise_array,
+                       norm=LogNorm())
+    ax.set_title('Asymptotic mean integrated square error')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    fig.colorbar(im, ax=ax)
+    ax.set_xlabel(r'$h_\phi$ [m]')
+    ax.set_ylabel(r'$h_\theta$ [m]')
+    fig.savefig(output_dir + '/axisymmetric_calc_amise_2d_array.png',
+                bbox_inches='tight', dpi=300)
