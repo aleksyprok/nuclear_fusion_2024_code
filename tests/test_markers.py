@@ -96,8 +96,8 @@ def test_get_s_phi_s_theta_from_r_z_phi():
     tag = '13-12-2023_16-51-52.811'
     test_run = run.Run(dir_path, tag)
     wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
-    test_run.update_wall(wall_path)
-    test_run.update_markers()
+    test_run.init_wall(wall_path)
+    test_run.init_markers()
     markers.get_s_phi_s_theta_from_r_z_phi(test_run)
     assert len(test_run.markers.stopped.s_phi) == 41927
     assert len(test_run.markers.stopped.s_theta) == 41927
