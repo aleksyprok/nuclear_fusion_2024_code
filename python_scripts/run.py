@@ -33,44 +33,44 @@ class Run:
         self.log_path = self.dir_path + f'/LOG_{self.tag}.out'
         self.fstate_path = self.dir_path + f'/FINAL_STATE_{self.tag}.dat'
 
-    def update_log(self):
+    def init_log(self):
         """
-        Update the Run object with information from the LOCUST .log file.
+        Initialize the Run object with information from the LOCUST .log file.
         """
         self.log = log.Log(self.log_path)
 
-    def update_wall(self, wall_path):
+    def init_wall(self, wall_path):
         """
-        Update the Run object with information from the LOCUST .log file.
+        Initialize the Run object with information from the LOCUST .log file.
         """
         self.wall = wall.Wall(wall_path)
 
-    def update_markers(self):
+    def init_markers(self):
         """
-        Update the Run object with information from the LOCUST FINAL_STATE*.dat file.
+        Initialize the Run object with information from the LOCUST FINAL_STATE*.dat file.
         """
         self.markers = markers.Markers(self.fstate_path)
         if self.wall is not None:
             markers.get_s_phi_s_theta_from_r_z_phi(self)
 
-    def update_gfile(self, gfile_path):
+    def init_gfile(self, gfile_path):
         """
-        Update the Run object with information from the eqdsk file.
+        Initialize the Run object with information from the eqdsk file.
         """
         self.gfile = my_gfile_reader.getGfile(gfile_path)
 
-    def update_flux(self,
-                    num_grid_points=1000):
+    def init_flux(self,
+                  num_grid_points=1000):
         """
-        Update the Run object with the flux class based on
+        Initialize the Run object with the flux class based on
         desired num_grid_points, num_h_theta_1d, num_h_theta_2d,
         num_h_phi.
         """
         self.flux = flux.Flux(num_grid_points=num_grid_points)
         if self.wall is not None:
-            self.flux.calc_s_theta_s_phi(self)
+            flux.calc_s_theta_s_phi(self)
         if self.markers is not None:
-            self.flux.calc_total_energy(self)
+            flux.calc_total_energy(self)
 
 def create_runs_list(dir_path):
     """
