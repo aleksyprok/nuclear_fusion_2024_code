@@ -1,4 +1,5 @@
 #!/bin/bash
+# The is a shell script to run the locust code in interactive mode.
 
 device="aws_v100"
 tokamak="STEP"
