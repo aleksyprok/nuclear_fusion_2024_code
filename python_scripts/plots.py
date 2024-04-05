@@ -17,7 +17,7 @@ def plot_total_flux_over_runs(runs_dir):
     # runs_dir = os.path.join(repo_path, "output_data", "FEC_2024_missing_31_45_processed")
     runs = run.create_runs_list(runs_dir)
     for run_i in runs:
-        run_i.update_log()
+        run_i.init_log()
 
     print("len(runs) = ", len(runs))
 
@@ -143,7 +143,7 @@ def plot_simulation_time_over_runs(runs_dir):
 
     runs = run.create_runs_list(runs_dir)
     for run_i in runs:
-        run_i.update_log()
+        run_i.init_log()
     simulation_times = np.array([])
     for run_i in runs:
         simulation_times = np.append(simulation_times, run_i.log.simulation_time)
@@ -168,8 +168,8 @@ def plot_axisymmetric_constant_zeff_vs_non_constant():
     run_vary_zeff = run.Run(vary_zeff_dir, vary_zeff_tag)
     run_cnst_zeff = run.Run(cnst_zeff_dir, cnst_zeff_tag)
 
-    run_vary_zeff.update_log()
-    run_cnst_zeff.update_log()
+    run_vary_zeff.init_log()
+    run_cnst_zeff.init_log()
 
     print(run_vary_zeff.log.total_stopped_power / run_vary_zeff.log.pinj * 100)
     print(run_cnst_zeff.log.total_stopped_power / run_vary_zeff.log.pinj * 100)
@@ -211,8 +211,8 @@ if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     runs_directory = os.path.join(repository_path, "output_data",
                                   "FEC_2024_missing_31_45_processed")
-    # plot_total_flux_over_runs(runs_directory)
-    # plot_simulation_time_over_runs(runs_directory)
+    plot_total_flux_over_runs(runs_directory)
+    plot_simulation_time_over_runs(runs_directory)
     # plot_axisymmetric_constant_zeff_vs_non_constant()
     plot_locust_lcfs()
     plt.show()
