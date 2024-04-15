@@ -37,6 +37,8 @@ class Flux:
         self.conf_band_1d: Optional[float] = None
         self.conf_band_2d: Optional[float] = None
         self.conf_band_total: Optional[float] = None
+        self.max_energy_1d: Optional[float] = None
+        self.max_energy_2d: Optional[float] = None
 
 def calc_s_theta_s_phi(run):
     """
