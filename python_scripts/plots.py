@@ -4,6 +4,7 @@ This module contains routines for plotting results.
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.path import Path
 from python_scripts import run, my_gfile_reader
 
 def plot_total_flux_over_runs(runs_dir):
@@ -206,13 +207,76 @@ def plot_locust_lcfs():
     ax.plot(gfile_14.R_bnd, gfile_14.Z_bnd)
     ax.set_aspect('equal')
 
+def plot_ripple_field():
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    gfile = my_gfile_reader.getGfile(os.path.join(repo_path, "input_data", "SPR-045-14.eqdsk"))
+    wall_path = os.path.join(repo_path, "input_data", "SPP-001_wall.dat")
+    wall_rz = np.loadtxt(wall_path)
+    r_wall = wall_rz[:, 0]
+    z_wall = wall_rz[:, 1]
+
+    r_coil = 8
+    n_coil = 12
+    r0 = 5.6
+    z0 = 0
+    _, _, _, bt0, _ = my_gfile_reader.GetPsiAndB(gfile, r0, z0)
+    b_phi_ripple = gfile.f_dia[0] / r0 * (r0 / r_coil)**n_coil
+    print(f"BT0 at r = {r0} and z = {z0} is {bt0}")
+    print(f"Ripple amplitude at r = {r0} and z = {z0} is {b_phi_ripple}")
+
+    r_mg, z_mg = np.meshgrid(gfile.R, gfile.Z)
+    # Evalue B at every r_mg and z_mg value
+    _, _, br, bt, bz = my_gfile_reader.GetPsiAndB(gfile, r_mg.ravel(), z_mg.ravel())
+    # Reshape to match r_mg and z_mg
+    br = br.reshape(r_mg.shape)
+    bt = bt.reshape(r_mg.shape)
+    bz = bz.reshape(r_mg.shape)
+    # Make imshow of bt
+    # fig, ax = plt.subplots()
+    # ax.set_aspect('equal')
+    # im = ax.imshow(br,
+    #                extent=[np.min(gfile.R), np.max(gfile.R), np.min(gfile.Z), np.max(gfile.Z)],
+    #                origin='lower')
+    # ax.set_xlabel("R [m]")
+    # ax.set_ylabel("Z [m]")
+    # ax.set_title("BT")
+    # fig.colorbar(im, ax=ax)
+    d = gfile.f_dia[0] / r_mg * (r_mg / r_coil)**n_coil
+    b0_squared = bt**2 + br**2 + bz**2 + d**2
+    d_hat = d * np.sqrt(br**2 + bt**2) / b0_squared
+    ripple = (np.sqrt(1 + 2 * d_hat) - np.sqrt(1 - 2 * d_hat)) \
+           / (np.sqrt(1 + 2 * d_hat) + np.sqrt(1 - 2 * d_hat))
+    # Set values outside gfile.R_bnd, gfile.Z_bnd polygon to zero
+    # polygon_path = Path(np.column_stack((gfile.R_bnd, gfile.Z_bnd)))
+    polygon_path = Path(np.column_stack((r_wall, z_wall)))
+    coords = np.column_stack((r_mg.ravel(), z_mg.ravel()))
+    inside_polygon = polygon_path.contains_points(coords)
+    # Reshape to match r_mg and z_mg
+    inside_polygon = inside_polygon.reshape(r_mg.shape)
+    ripple *= inside_polygon
+    # Make contour plot of ripple with 50 levels and 
+    # logarithic colour
+    fig, ax = plt.subplots()
+    ax.set_aspect('equal')
+    ax.set_xlabel("R [m]")
+    ax.set_ylabel("Z [m]")
+    ax.set_title(r"$\left(\sqrt{1+2\hat{d}} - \sqrt{1-2\hat{d}}\right) /$" "\n"
+                 r"$\left(\sqrt{1+2\hat{d}} + \sqrt{1-2\hat{d}}\right)$")
+    ctr = ax.contour(gfile.R, gfile.Z, ripple,
+                      levels=np.linspace(0, np.sqrt(np.max(ripple)), 25)**2)
+                     
+    fig.colorbar(ctr, ax=ax)
+    fig.savefig('plots/ripple_field_contour.png', bbox_inches='tight', dpi=300)
+
+
 
 if __name__ == "__main__":
-    repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    runs_directory = os.path.join(repository_path, "output_data",
-                                  "FEC_2024")
-    plot_total_flux_over_runs(runs_directory)
-    plot_simulation_time_over_runs(runs_directory)
+    # repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # runs_directory = os.path.join(repository_path, "output_data",
+    #                               "FEC_2024")
+    # plot_total_flux_over_runs(runs_directory)
+    # plot_simulation_time_over_runs(runs_directory)
     # plot_axisymmetric_constant_zeff_vs_non_constant()
     # plot_locust_lcfs()
+    plot_ripple_field()
     plt.show()
