@@ -360,6 +360,15 @@ def calc_asymptotic_bias_2d(pdf_fun, grid_x, grid_y, hx, hy):
     """
     pdf_xx_array = pdf_fun(grid_x, grid_y, dx=2)
     pdf_yy_array = pdf_fun(grid_x, grid_y, dy=2)
+    # pdf_array = pdf_fun(grid_x, grid_y)
+    # left = np.roll(pdf_array, 1, axis=0)
+    # right = np.roll(pdf_array, -1, axis=0)
+    # delta_x = grid_x[1] - grid_x[0]
+    # pdf_xx_array = (right - 2 * pdf_array + left) / delta_x**2
+    # up = np.roll(pdf_array, 1, axis=1)
+    # down = np.roll(pdf_array, -1, axis=1)
+    # delta_y = grid_y[1] - grid_y[0]
+    # pdf_yy_array = (down - 2 * pdf_array + up) / delta_y**2
 
     return 0.5 * (pdf_xx_array * hx**2 + pdf_yy_array * hy**2)
 
@@ -469,11 +478,11 @@ def calc_amise_2d_array(x, y, grid_x, grid_y, weights,
 
             pdf_fun = periodic_kde_2d(x, y, x_min, x_max, y_min,
                                       y_max, weights, hx, hy,
-                                      num_grid_points = num_grid_points)
+                                      num_grid_points=num_grid_points)
 
             amse_array = calc_amse_2d(pdf_fun, grid_x, grid_y, hx, hy, weights)
 
-            amise = np.trapz(np.trapz(amse_array, x = grid_x, axis = 0), x = grid_y)
+            amise = np.trapz(np.trapz(amse_array, x=grid_x, axis=0), x=grid_y)
             amise_array[j, i] = amise
 
     x_min = np.min(grid_x)
