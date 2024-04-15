@@ -51,7 +51,7 @@ def test_calc_energy_flux_1d():
     fig, ax = plt.subplots()
     ax.plot(test_run.flux.s_theta, test_run.flux.energy_1d)
     ax.set_xlabel('s_theta [m]')
-    ax.set_ylabel('Energy flux [W/m^2]')
+    ax.set_ylabel('Energy flux [MW/m^2]')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_energy_flux_1d.png'))
     assert test_run.flux.h_theta_1d == 0.1
 
@@ -83,7 +83,7 @@ def test_calc_energy_flux_2d():
                        test_run.wall.s_theta_min, test_run.wall.s_theta_max])
     ax.set_xlabel('s_phi [m]')
     ax.set_ylabel('s_theta [m]')
-    ax.set_title('Energy flux [W/m^2]\n'
+    ax.set_title('Energy flux [MW/m^2]\n'
                  f'axisymmetric, h_theta_2d = {test_run.flux.h_theta_2d}'
                  f', h_phi = {test_run.flux.h_phi}')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_energy_flux_2d.png'),
