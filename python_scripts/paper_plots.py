@@ -79,9 +79,10 @@ def plot_ripple_runs(all_runs):
                 calc_energy_flux(run_i, output_dir_i)
             else:
                 calc_energy_flux(run_i, output_dir_i, previous_run=runs[i-1])
+            run_i.flux.max_energy_2d = np.max(run_i.flux.energy_2d)
             runs_metadata.append([run_i.log.ncoil,
                                   run_i.log.rcoil,
-                                  np.max(run_i.flux.energy_2d),
+                                  run_i.flux.max_energy_2d,
                                   run_i.flux.total_energy,
                                   run_i.flux.conf_band_2d,
                                   run_i.flux.conf_band_total,
