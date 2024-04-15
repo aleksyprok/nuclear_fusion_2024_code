@@ -127,6 +127,7 @@ def test_periodic_kde_1d():
     output_dir = os.path.join(repo_path, "tests", "output_plots")
     outputpath = os.path.join(output_dir, 'periodic_kde_1d.png')
     fig.savefig(outputpath)
+    plt.close(fig)
 
     # Check integral of the PDE is 1 within a 10^-4 tolerance
     assert np.isclose(np.trapz(pdf_fun(grid_x), grid_x),
@@ -190,6 +191,7 @@ def test_periodic_kde_2d():
     ax.scatter(x, y)
     outputpath = os.path.join(output_dir, 'periodic_kde_2d.png')
     fig.savefig(outputpath)
+    plt.close(fig)
 
     # Check integral is equal to 1
     assert np.isclose(np.trapz(np.trapz(pdf_fft, grid_x, axis=0), grid_y, axis =0),
@@ -223,6 +225,7 @@ def test_calc_asymptotic_bias_1d():
     ax.legend()
     ax.set_xlim(x_min, x_max)
     fig.savefig(output_dir + '/calc_asymptotic_bias_1d.png')
+    plt.close(fig)
 
 def test_calc_asymptotic_variance_1d():
     """
@@ -251,6 +254,7 @@ def test_calc_asymptotic_variance_1d():
     ax.legend()
     ax.set_xlim(x_min, x_max)
     fig.savefig(output_dir + '/calc_asymptotic_variance_1d.png')
+    plt.close(fig)
 
 def test_calc_amse_1d():
     """
@@ -279,6 +283,7 @@ def test_calc_amse_1d():
     ax.legend()
     ax.set_xlim(x_min, x_max)
     fig.savefig(output_dir + '/calc_amse_1d.png')
+    plt.close(fig)
 
 # def test_calc_amise_1d():
 #     """
@@ -353,6 +358,7 @@ def test_calc_asymptotic_bias_2d():
         ax[i].set_ylabel('y')
     fig.savefig(output_dir + '/calc_asymptotic_bias_2d.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
     # Line plot along the line y=2 we need to find grid point close to y=2
     y_index = np.argmin(np.abs(y_grid - 2))
@@ -364,6 +370,7 @@ def test_calc_asymptotic_bias_2d():
     ax.set_title('Asymptotic bias along y=2')
     fig.savefig(output_dir + '/calc_asymptotic_bias_2d_line.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
 def test_calc_asymptotic_variance_2d():
     """
@@ -403,6 +410,7 @@ def test_calc_asymptotic_variance_2d():
         ax[i].set_ylabel('y')
     fig.savefig(output_dir + '/calc_asymptotic_variance_2d.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
     # Line plot along the line y=2 we need to find grid point close to y=2
     y_index = np.argmin(np.abs(y_grid - 2))
@@ -414,6 +422,7 @@ def test_calc_asymptotic_variance_2d():
     ax.set_title('Asymptotic variance along y=2')
     fig.savefig(output_dir + '/calc_asymptotic_variance_2d_line.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
 def test_calc_amse_2d():
     """
@@ -464,6 +473,7 @@ def test_calc_amse_2d():
     ax.set_title('Asymptotic mean square error along y=2')
     fig.savefig(output_dir + '/calc_amse_2d_line.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
 def test_calc_amse_2d_array_axisymmetric():
     """
@@ -509,6 +519,7 @@ def test_calc_amse_2d_array_axisymmetric():
     ax.set_ylabel('theta')
     fig.savefig(output_dir + '/axisymmetric_calc_amse_2d_array.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
 # def test_calc_amise_2d_array():
 #     """

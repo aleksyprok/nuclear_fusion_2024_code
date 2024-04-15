@@ -53,6 +53,7 @@ def test_calc_energy_flux_1d():
     ax.set_xlabel('s_theta [m]')
     ax.set_ylabel('Energy flux [MW/m^2]')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_energy_flux_1d.png'))
+    plt.close(fig)
 
 def test_calc_energy_flux_2d():
     """
@@ -87,6 +88,7 @@ def test_calc_energy_flux_2d():
                  f', h_phi = {test_run.flux.h_phi}')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_energy_flux_2d.png'),
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
 def test_calc_optimum_bandwidth_1d():
     """
@@ -118,6 +120,7 @@ def test_calc_optimum_bandwidth_1d():
     ax.set_xlabel('h_theta_1d [m]')
     ax.set_ylabel('AMISE')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_amise_1d.png'))
+    plt.close(fig)
     assert test_run.flux.h_theta_1d == 0.0372759372031494
 
 def test_calc_optimum_bandwidth_2d():
@@ -158,6 +161,7 @@ def test_calc_optimum_bandwidth_2d():
     ax.set_ylabel(r'$h_\theta$ [m]')
     fig.savefig(output_dir + '/axisymmetric_amise_2d_array.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
     fig, axs = plt.subplots(1, 2)
     fig_size = fig.get_size_inches()
@@ -185,3 +189,4 @@ def test_calc_optimum_bandwidth_2d():
     axs[1].set_title(r'$h_\phi$ = ' f'{test_run.flux.h_phi} m')
     fig.savefig(output_dir + '/axisymmetric_amise_2d_line.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)

@@ -113,6 +113,7 @@ def test_generate_random_3d_vector():
     axs[2].set_title('Z component')
     fig.savefig('tests/output_plots/random_3d_vectors.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
     assert vectors.shape == (3, num_samples)
     assert np.all(vectors >= -v_alpha)
@@ -164,6 +165,7 @@ def test_gen_marker_velocities():
     axs[2].set_title('Z component')
     fig.savefig(output_dir + '/marker_velocities.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
     fig, ax = plt.subplots()
     ax.hist(marker_energies, bins=100, density=True)
@@ -178,5 +180,6 @@ def test_gen_marker_velocities():
     ax.set_title('Alpha particle energy distribution')
     fig.savefig(output_dir + '/alpha_energy_distribution.png',
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
 
     assert marker_velocities.shape == (3, num_markers)

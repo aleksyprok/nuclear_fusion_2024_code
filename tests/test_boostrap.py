@@ -51,6 +51,9 @@ def test_calc_be_1d_array():
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
                             "axisymmetric", "gpu-q-41")
+    output_dir = os.path.join("tests", "output_plots")
+    output_path = os.path.join(output_dir, 'be_array_1d.png')
+    os.makedirs(output_dir, exist_ok=True)
     tag = '13-12-2023_16-51-52.811'
     test_run = run.Run(dir_path, tag)
     test_run.init_log()
@@ -69,7 +72,7 @@ def test_calc_be_1d_array():
     ax.set_xlabel('BE [MW/m^2]')
     ax.set_ylabel('Probability')
     ax.set_title(f'Max energy flux 2d = {np.max(test_run.flux.energy_1d):.1e} MW/m^2')
-    fig.savefig('tests/output_plots/be_array_1d.png',
+    fig.savefig(output_path,
                 bbox_inches='tight', dpi=300)
     plt.close(fig)
 
@@ -80,6 +83,9 @@ def test_calc_be_2d_array():
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
                             "axisymmetric", "gpu-q-41")
+    output_dir = os.path.join("tests", "output_plots")
+    output_path = os.path.join(output_dir, 'be_array_2d.png')
+    os.makedirs(output_dir, exist_ok=True)
     tag = '13-12-2023_16-51-52.811'
     test_run = run.Run(dir_path, tag)
     test_run.init_log()
@@ -99,7 +105,7 @@ def test_calc_be_2d_array():
     ax.set_xlabel('BE [MW/m^2]')
     ax.set_ylabel('Probability')
     ax.set_title(f'Max energy flux 2d = {np.max(test_run.flux.energy_2d):.1e} MW/m^2')
-    fig.savefig('tests/output_plots/be_array_2d.png',
+    fig.savefig(output_path,
                 bbox_inches='tight', dpi=300)
     plt.close(fig)
 
@@ -110,6 +116,9 @@ def test_calc_be_total_array():
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dir_path = os.path.join(repo_path, "input_data", "LOCUST_SPR-045-14_OutputFiles",
                             "axisymmetric", "gpu-q-41")
+    output_dir = os.path.join("tests", "output_plots")
+    output_path = os.path.join(output_dir, 'be_array_total.png')
+    os.makedirs(output_dir, exist_ok=True)
     tag = '13-12-2023_16-51-52.811'
     test_run = run.Run(dir_path, tag)
     test_run.init_log()
@@ -125,6 +134,6 @@ def test_calc_be_total_array():
     ax.set_xlabel('BE [MW]')
     ax.set_ylabel('Probability')
     ax.set_title(f'Total energy flux = {test_run.flux.total_energy:.1e} MW')
-    fig.savefig('tests/output_plots/be_array_total.png',
+    fig.savefig(output_path,
                 bbox_inches='tight', dpi=300)
     plt.close(fig)

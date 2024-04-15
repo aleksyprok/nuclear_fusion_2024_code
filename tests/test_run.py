@@ -59,3 +59,4 @@ def test_stopped_scatter():
     output_path = os.path.join(output_dir, 'stopped_particles.png')
     fig.savefig(output_path,
                 bbox_inches='tight', dpi=300)
+    plt.close(fig)
