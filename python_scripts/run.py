@@ -64,7 +64,9 @@ class Run:
         self.gfile = my_gfile_reader.getGfile(gfile_path)
 
     def init_flux(self,
-                  num_grid_points=1000,
+                  num_grid_points_1d=10**4,
+                  num_grid_points_2d=10**3,
+                  num_bootstraps=128,
                   h_theta_1d_array=None,
                   h_theta_2d_array=None,
                   h_phi_array=None):
@@ -73,11 +75,13 @@ class Run:
         desired num_grid_points, num_h_theta_1d, num_h_theta_2d,
         num_h_phi.
         """
-        self.flux = flux.Flux(num_grid_points=num_grid_points)
+        self.flux = flux.Flux(num_grid_points_1d=num_grid_points_1d,
+                              num_grid_points_2d=num_grid_points_2d,
+                              num_bootstraps=num_bootstraps)
         if self.wall is not None:
             flux.calc_s_theta_s_phi(self)
         if self.markers is not None:
-            flux.calc_total_energy(self)
+            self.flux.total_energy = flux.calc_total_energy(self)
         if h_theta_1d_array is not None:
             self.flux.h_theta_1d_array = h_theta_1d_array
         if h_theta_2d_array is not None:
@@ -92,6 +96,11 @@ class Run:
         self.markers = None
         self.gfile = None
         self.wall = None
+        self.flux.s_phi = None
+        self.flux.s_theta_1d = None
+        self.flux.s_theta_2d = None
+        self.flux.energy_1d = None
+        self.flux.energy_2d = None
 
 def create_runs_list(dir_path):
     """
