@@ -32,6 +32,8 @@ class ParticleGroup:
         self.s_phi = np.array([])
         self.s_theta = np.array([])
         self.remap_phi_n = None
+        self.energy = np.array([])
+        self.energy0 = np.array([])
 
     def add_particles(self, data):
         """
@@ -56,6 +58,14 @@ class ParticleGroup:
         self.vphi0 = np.concatenate((self.vphi0, data[:, 13]))
         self.vz0 = np.concatenate((self.vz0, data[:, 14]))
         self.weight = np.concatenate((self.weight, data[:, 15]))
+        vr = data[:, 3]
+        vphi = data[:, 4]
+        vz = data[:, 5]
+        self.energy = np.concatenate((self.energy, 0.5 * (vr**2 + vphi**2 + vz**2)))
+        vr0 = data[:, 12]
+        vphi0 = data[:, 13]
+        vz0 = data[:, 14]
+        self.energy0 = np.concatenate((self.energy0, 0.5 * (vr0**2 + vphi0**2 + vz0**2)))
 
 class Markers:
     """
@@ -94,7 +104,6 @@ class Markers:
         elif status_code == -3:
             self.unresolved.add_particles(data)
 
-    # def calculate_s_phi_s_theta(self, r_wall, z_wall):
 def get_s_phi_s_theta_from_r_z_phi(run,
                                    remap_phi_n = None):
     """
