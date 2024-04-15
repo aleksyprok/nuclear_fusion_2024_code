@@ -273,7 +273,7 @@ def calc_amse_1d(pdf_fun, grid_x, hx, weights):
 
     return asymptotic_bias**2 + asymptotic_variance
 
-def calc_amise_1d_array(x, grid_x, weights, hx_array, \
+def calc_amise_1d_array(x, grid_x, weights, hx_array,
                         num_grid_points = 10**3):
     """
     Calculate the asymptotic mean integrated square error for a set of bandwidths.
@@ -311,7 +311,7 @@ def calc_amise_1d_array(x, grid_x, weights, hx_array, \
 
     x_min = np.min(grid_x)
     x_max = np.max(grid_x)
-    shm1 = shared_memory.SharedMemory(create = True, \
+    shm1 = shared_memory.SharedMemory(create = True,
                                       size = np.zeros(len(hx_array)).nbytes)
     amise_array = np.ndarray(len(hx_array), dtype = float, buffer = shm1.buf)
     n_array_list = np.array_split(np.arange(len(hx_array)), cpu_count())
@@ -320,7 +320,7 @@ def calc_amise_1d_array(x, grid_x, weights, hx_array, \
         processes = []
 
         for n_array in n_array_list:
-            p = Process(target = calc_amise, \
+            p = Process(target = calc_amise,
                 args = (n_array,))
             p.start()
             processes.append(p)
@@ -426,8 +426,8 @@ def calc_amse_2d(pdf_fun, grid_x, grid_y, hx, hy, weights):
 
     return asymptotic_bias**2 + asymptotic_variance
 
-def calc_amise_2d_array(x, y, grid_x, grid_y, weights, \
-                        hx_array, hy_array, \
+def calc_amise_2d_array(x, y, grid_x, grid_y, weights,
+                        hx_array, hy_array,
                         num_grid_points = 10**3):
     """
     Calculates the asymptotic mean integral square error for a set of bandwidths.
@@ -481,7 +481,7 @@ def calc_amise_2d_array(x, y, grid_x, grid_y, weights, \
     y_min = np.min(grid_y)
     y_max = np.max(grid_y)
 
-    shm1 = shared_memory.SharedMemory(create = True, \
+    shm1 = shared_memory.SharedMemory(create = True,
                                       size = np.zeros((len(hy_array), len(hx_array))).nbytes)
     amise_array = np.ndarray((len(hy_array), len(hx_array)), dtype = float, buffer = shm1.buf)
     i_array = np.zeros(len(hx_array) * len(hy_array), dtype = int)
@@ -499,7 +499,7 @@ def calc_amise_2d_array(x, y, grid_x, grid_y, weights, \
         processes = []
 
         for n_array in n_array_list:
-            p = Process(target = calc_amise, \
+            p = Process(target = calc_amise,
                         args = (n_array,))
             p.start()
             processes.append(p)
