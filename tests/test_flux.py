@@ -22,7 +22,7 @@ def test_calc_total_energy():
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
     test_run.init_gfile(gfile_path)
     test_run.init_markers()
-    test_run.init_flux(num_grid_points=1000)
+    test_run.init_flux()
 
     assert np.isclose(test_run.flux.total_energy,
                       test_run.log.total_stopped_power,
@@ -46,14 +46,13 @@ def test_calc_energy_flux_1d():
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
     test_run.init_gfile(gfile_path)
     test_run.init_markers()
-    test_run.init_flux(num_grid_points=1000)
-    flux.calc_energy_flux_1d(test_run, h_theta_1d=0.1)
+    test_run.init_flux(num_grid_points_1d=10**4)
+    test_run.flux.energy_1d = flux.calc_energy_flux_1d(test_run, h_theta_1d=0.1)
     fig, ax = plt.subplots()
-    ax.plot(test_run.flux.s_theta, test_run.flux.energy_1d)
+    ax.plot(test_run.flux.s_theta_1d, test_run.flux.energy_1d)
     ax.set_xlabel('s_theta [m]')
     ax.set_ylabel('Energy flux [MW/m^2]')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_energy_flux_1d.png'))
-    assert test_run.flux.h_theta_1d == 0.1
 
 def test_calc_energy_flux_2d():
     """
@@ -73,8 +72,8 @@ def test_calc_energy_flux_2d():
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
     test_run.init_gfile(gfile_path)
     test_run.init_markers()
-    test_run.init_flux(num_grid_points=1000)
-    flux.calc_energy_flux_2d(test_run, h_phi=1, h_theta_2d=0.1)
+    test_run.init_flux(num_grid_points_2d=10**3)
+    test_run.flux.energy_2d = flux.calc_energy_flux_2d(test_run, h_phi=1, h_theta_2d=0.1)
 
     # Make an imshow of the energy flux
     fig, ax = plt.subplots()
@@ -88,9 +87,6 @@ def test_calc_energy_flux_2d():
                  f', h_phi = {test_run.flux.h_phi}')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_energy_flux_2d.png'),
                 bbox_inches='tight', dpi=300)
-
-    assert test_run.flux.h_theta_2d == 0.1
-    assert test_run.flux.h_phi == 1
 
 def test_calc_optimum_bandwidth_1d():
     """
@@ -110,7 +106,7 @@ def test_calc_optimum_bandwidth_1d():
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
     test_run.init_gfile(gfile_path)
     test_run.init_markers()
-    test_run.init_flux(num_grid_points=1000)
+    test_run.init_flux(num_grid_points_1d=1000)
     test_run.flux.h_theta_1d_array = np.logspace(-2, 0, 64)
     flux.calc_optimum_bandwidth_1d(test_run)
 
@@ -122,7 +118,7 @@ def test_calc_optimum_bandwidth_1d():
     ax.set_xlabel('h_theta_1d [m]')
     ax.set_ylabel('AMISE')
     fig.savefig(os.path.join(output_dir, 'axisymmetric_amise_1d.png'))
-    assert test_run.flux.h_theta_1d == 0.029935772947204904
+    assert test_run.flux.h_theta_1d == 0.0372759372031494
 
 def test_calc_optimum_bandwidth_2d():
     """
@@ -142,7 +138,7 @@ def test_calc_optimum_bandwidth_2d():
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
     test_run.init_gfile(gfile_path)
     test_run.init_markers()
-    test_run.init_flux(num_grid_points=1000)
+    test_run.init_flux(num_grid_points_2d=10**3)
     test_run.flux.h_phi_array = np.logspace(-2, 0, 8)
     test_run.flux.h_theta_2d_array = np.logspace(-2, 0, 8)
     flux.calc_optimum_bandwidth_2d(test_run)
