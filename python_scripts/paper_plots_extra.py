@@ -26,6 +26,7 @@ def plot_amise_2d(run, output_dir):
     ax.set_ylabel(r'$h_\theta$ [m]')
     fig.savefig(output_dir + '/amise_2d_array.png',
                 bbox_inches='tight', dpi=300)
+    plt.close('all')
 
     fig, axs = plt.subplots(1, 2)
     fig_size = fig.get_size_inches()
@@ -53,6 +54,7 @@ def plot_amise_2d(run, output_dir):
     axs[1].set_title(r'$h_\phi$ = ' f'{run.flux.h_phi} m')
     fig.savefig(output_dir + '/amise_2d_line.png',
                 bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def plot_energy_flux_2d(run, output_dir):
     """
@@ -70,7 +72,7 @@ def plot_energy_flux_2d(run, output_dir):
                 bbox_inches='tight', dpi=300)
 
     fig, ax = plt.subplots()
-    ax.plot(run.flux.s_theta, np.max(run.flux.energy_2d, axis=0))
+    ax.plot(run.flux.s_theta_2d, np.max(run.flux.energy_2d, axis=0))
     for s_nod_i in run.wall.special_nodes:
         ax.axvline(x=run.wall.s_nodes[s_nod_i], color='k')
     ax.set_xlabel('s_theta [m]')
@@ -78,6 +80,7 @@ def plot_energy_flux_2d(run, output_dir):
                  f'h_phi = {run.flux.h_phi:.2e}, h_theta_2d = {run.flux.h_theta_2d:.2e}')
     fig.savefig(output_dir + '/max_energy_flux_2d_line.png',
                 bbox_inches='tight', dpi=300)
+    plt.close('all')
 
 def save_attributes_to_file(obj, output_dir, indent=0):
     """
