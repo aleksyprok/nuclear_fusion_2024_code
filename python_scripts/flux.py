@@ -3,6 +3,7 @@ The module contains routines associated with the energy flux on the PFCs.
 It also contains information about the distribution of the energy flux on the PFCs.
 """
 
+import time
 from typing import Optional
 import numpy as np
 from scipy.ndimage import minimum_filter
@@ -220,6 +221,8 @@ def calc_optimum_bandwidth_2d(run, h_phi_array=None, h_theta_2d_array=None):
         amise_array: array
             The AMISE for each of the bandwidths.
     """
+    print('Calculating optimum 2d bandwidths')
+    start_time = time.time()
     if h_phi_array is None:
         h_phi_array = run.flux.h_phi_array
     if h_theta_2d_array is None:
@@ -241,3 +244,4 @@ def calc_optimum_bandwidth_2d(run, h_phi_array=None, h_theta_2d_array=None):
     run.flux.amise_2d = amise_array
     run.flux.h_phi = h_phi
     run.flux.h_theta_2d = h_theta_2d
+    print(f'Optimum 2d bandwidths calculated in {time.time() - start_time} seconds')
