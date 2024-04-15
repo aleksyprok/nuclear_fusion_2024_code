@@ -3,10 +3,9 @@ Module to test the pkde module.
 """
 import os
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
 import numpy as np
 from scipy import stats
-from python_scripts import flux, pkde, run
+from python_scripts import pkde, run
 
 def test_extend_coords():
     """
@@ -210,7 +209,7 @@ def test_calc_asymptotic_bias_1d():
     weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
     x_min = -4
     x_max = 8
-    num_grid_points = 100
+    num_grid_points = 1000
     x_grid = np.linspace(x_min, x_max, num_grid_points)
     hx = 0.1
     pdf_fun = pkde.periodic_kde_1d(x, x_min, x_max, weights, hx)
@@ -238,7 +237,7 @@ def test_calc_asymptotic_variance_1d():
     weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
     x_min = -4
     x_max = 8
-    num_grid_points = 100
+    num_grid_points = 1000
     x_grid = np.linspace(x_min, x_max, num_grid_points)
     hx = 0.1
     pdf_fun = pkde.periodic_kde_1d(x, x_min, x_max, weights, hx)
@@ -266,8 +265,8 @@ def test_calc_amse_1d():
     weights = np.array([1, 2, 3, 1, 2, 3, 1, 2, 3])
     x_min = -4
     x_max = 8
-    num_grid_points = 100
-    x_grid = np.linspace(x_min, x_max, num_grid_points)
+    num_grid_points_1d = 10**4
+    x_grid = np.linspace(x_min, x_max, num_grid_points_1d)
     hx = 0.1
     pdf_fun = pkde.periodic_kde_1d(x, x_min, x_max, weights, hx)
     amse = pkde.calc_amse_1d(pdf_fun, x_grid, hx, weights)
@@ -476,7 +475,7 @@ def test_calc_amse_2d_array_axisymmetric():
                             "axisymmetric", "gpu-q-41")
     output_dir = os.path.join(repo_path, 'tests', 'output_plots')
     tag = '13-12-2023_16-51-52.811'
-    num_grid_points = 10**3
+    num_grid_points_2d = 10**3
     test_run = run.Run(dir_path, tag)
     test_run.init_log()
     wall_path = os.path.join(repo_path, 'input_data', 'SPP-001_wall.dat')
@@ -484,7 +483,7 @@ def test_calc_amse_2d_array_axisymmetric():
     gfile_path = os.path.join(repo_path, 'input_data', 'SPR-045-16.eqdsk')
     test_run.init_gfile(gfile_path)
     test_run.init_markers()
-    test_run.init_flux(num_grid_points=num_grid_points)
+    test_run.init_flux(num_grid_points_2d=num_grid_points_2d)
     h_phi = 0.1
     h_theta_2d = 0.01
     pdf_fun = pkde.periodic_kde_2d(test_run.markers.stopped.s_phi,
@@ -495,8 +494,8 @@ def test_calc_amse_2d_array_axisymmetric():
                                    test_run.wall.s_theta_max,
                                    test_run.markers.stopped.weight,
                                    h_phi, h_theta_2d,
-                                   num_grid_points = num_grid_points)
-    amse = pkde.calc_amse_2d(pdf_fun, test_run.flux.s_phi, test_run.flux.s_theta,
+                                   num_grid_points = num_grid_points_2d)
+    amse = pkde.calc_amse_2d(pdf_fun, test_run.flux.s_phi, test_run.flux.s_theta_2d,
                              h_phi, h_theta_2d, test_run.markers.stopped.weight)
 
     # Plot the amse array
