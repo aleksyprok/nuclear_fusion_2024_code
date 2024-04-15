@@ -31,6 +31,7 @@ class ParticleGroup:
         self.weight = np.array([])
         self.s_phi = np.array([])
         self.s_theta = np.array([])
+        self.remap_phi_n = None
 
     def add_particles(self, data):
         """
@@ -94,7 +95,8 @@ class Markers:
             self.unresolved.add_particles(data)
 
     # def calculate_s_phi_s_theta(self, r_wall, z_wall):
-def get_s_phi_s_theta_from_r_z_phi(run):
+def get_s_phi_s_theta_from_r_z_phi(run,
+                                   remap_phi_n = None):
     """
     Calculates and returns the s_phi and s_theta coordinates based on the r, z, and phi coordinates
     of the markers and the wall. This function relies on specific attributes of the `run` object.
@@ -124,9 +126,12 @@ def get_s_phi_s_theta_from_r_z_phi(run):
     Returns:
         None
     """
+    if remap_phi_n is not None:
+        run.markers.stopped.phi = run.markers.stopped.phi % (2 * np.pi / remap_phi_n) * remap_phi_n
     run.markers.stopped.s_phi = wall.get_s_phi_from_phi(run.markers.stopped.phi,
                                                         run.wall.r, run.wall.z)
     run.markers.stopped.s_theta = wall.get_s_theta_from_rz(run.markers.stopped.r,
                                                            run.markers.stopped.z,
                                                            run.wall.r,
                                                            run.wall.z)
+    run.markers.stopped.remap_phi_n = remap_phi_n
