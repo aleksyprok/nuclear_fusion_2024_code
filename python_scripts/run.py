@@ -39,19 +39,23 @@ class Run:
         """
         self.log = log.Log(self.log_path)
 
-    def init_wall(self, wall_path):
+    def init_wall(self, wall_path,
+                  special_nodes=(0, 1, 2, 3)):
         """
         Initialize the Run object with information from the LOCUST .log file.
         """
-        self.wall = wall.Wall(wall_path)
+        self.wall = wall.Wall(wall_path,
+                              special_nodes=special_nodes)
 
-    def init_markers(self):
+    def init_markers(self,
+                     remap_phi_n=None):
         """
         Initialize the Run object with information from the LOCUST FINAL_STATE*.dat file.
         """
         self.markers = markers.Markers(self.fstate_path)
         if self.wall is not None:
-            markers.get_s_phi_s_theta_from_r_z_phi(self)
+            markers.get_s_phi_s_theta_from_r_z_phi(self,
+                                                   remap_phi_n=remap_phi_n)
 
     def init_gfile(self, gfile_path):
         """
@@ -60,7 +64,10 @@ class Run:
         self.gfile = my_gfile_reader.getGfile(gfile_path)
 
     def init_flux(self,
-                  num_grid_points=1000):
+                  num_grid_points=1000,
+                  h_theta_1d_array=None,
+                  h_theta_2d_array=None,
+                  h_phi_array=None):
         """
         Initialize the Run object with the flux class based on
         desired num_grid_points, num_h_theta_1d, num_h_theta_2d,
@@ -71,6 +78,20 @@ class Run:
             flux.calc_s_theta_s_phi(self)
         if self.markers is not None:
             flux.calc_total_energy(self)
+        if h_theta_1d_array is not None:
+            self.flux.h_theta_1d_array = h_theta_1d_array
+        if h_theta_2d_array is not None:
+            self.flux.h_theta_2d_array = h_theta_2d_array
+        if h_phi_array is not None:
+            self.flux.h_phi_array = h_phi_array
+
+    def free_space(self):
+        """
+        Free the memory used by the Run object.
+        """
+        self.markers = None
+        self.gfile = None
+        self.wall = None
 
 def create_runs_list(dir_path):
     """
