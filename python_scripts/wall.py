@@ -3,6 +3,7 @@ Module contains the routines to parameterize the wall.
 """
 
 from multiprocessing import Process, Manager, cpu_count, shared_memory
+import time
 import numpy as np
 from shapely.geometry import Point, Polygon, LineString
 from shapely.ops import nearest_points
@@ -123,7 +124,8 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
                     if index == len(r_wall) - 2:
                         print('Error: Unable to calculate s_theta.')
 
-    print('\nCalculating s_theta from r_coords and z_coords.')
+    print('Calculating s_theta from r_coords and z_coords.')
+    start_time = time.time()
 
     wall_coords = np.vstack([r_wall, z_wall]).T
     poly = Polygon(wall_coords)
@@ -151,6 +153,8 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
     s_theta = np.array(s_theta)
     shm.close()
     shm.unlink()
+
+    print(f'Time taken: {time.time() - start_time:.2f} seconds')
 
     return s_theta
 
