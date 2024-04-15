@@ -35,7 +35,8 @@ def calc_energy_flux(run_i, output_dir_i,
     run_i.init_wall(WALL_PATH,
                     special_nodes=SPECIAL_NODES)
     run_i.init_markers(remap_phi_n=run_i.log.ncoil)
-    run_i.init_flux(num_grid_points_2d=NUM_GRID_POINTS_2D,
+    run_i.init_flux(num_grid_points_1d=NUM_GRID_POINTS_1D,
+                    num_grid_points_2d=NUM_GRID_POINTS_2D,
                     num_bootstraps=NUM_BOOTSTRAPS,
                     h_phi_array=H_PHI_ARRAY,
                     h_theta_1d_array=H_THETA_1D_ARRAY,
