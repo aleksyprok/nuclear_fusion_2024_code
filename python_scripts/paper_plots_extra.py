@@ -7,6 +7,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
+def plot_amise_1d(run, output_dir):
+    """
+    Plot the Asymptotic Mean Integrated Square error array.
+    """
+    fig, ax = plt.subplots()
+    ax.plot(run.flux.h_theta_1d_array, run.flux.amise_1d)
+    h_theta_index = np.where(run.flux.h_theta_1d_array == run.flux.h_theta_1d)[0][0]
+    ax.plot(run.flux.h_theta_1d, run.flux.amise_1d[h_theta_index],
+            'r.', markersize=10)
+    ax.set_title('Asymptotic mean integrated square error')
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_xlabel(r'$h_\theta$ [m]')
+    fig.savefig(output_dir + '/amise_1d_array.png',
+                bbox_inches='tight', dpi=300)
+    plt.close('all')
+
 def plot_amise_2d(run, output_dir):
     """
     Plot the Asymptotic Mean Integrated Square error array.
@@ -56,6 +73,21 @@ def plot_amise_2d(run, output_dir):
                 bbox_inches='tight', dpi=300)
     plt.close('all')
 
+def plot_energy_flux_1d(run, output_dir):
+    """
+    Plot the energy flux array.
+    """
+    fig, ax = plt.subplots()
+    ax.plot(run.flux.s_theta_1d, run.flux.energy_1d)
+    ax.set_title('Energy flux [MW/m^2]\n'
+                 f'h_phi = {run.flux.h_phi:.2e}, h_theta_2d = {run.flux.h_theta_2d:.2e}')
+    for s_nod_i in run.wall.special_nodes:
+        ax.axvline(x=run.wall.s_nodes[s_nod_i], color='k')
+    ax.set_xlabel(r's_theta [m]')
+    fig.savefig(output_dir + '/energy_flux_1d_array.png',
+                bbox_inches='tight', dpi=300)
+    plt.close('all')
+
 def plot_energy_flux_2d(run, output_dir):
     """
     Plot the energy flux array.
@@ -71,13 +103,20 @@ def plot_energy_flux_2d(run, output_dir):
     fig.savefig(output_dir + '/energy_flux_2d.png',
                 bbox_inches='tight', dpi=300)
 
-    fig, ax = plt.subplots()
-    ax.plot(run.flux.s_theta_2d, np.max(run.flux.energy_2d, axis=0))
+    fig, axs = plt.subplots(1, 2)
+    fig_size = fig.get_size_inches()
+    fig_size[0] *= 2
+    fig.set_size_inches(fig_size)
+    axs[0].plot(run.flux.s_theta_2d, np.max(run.flux.energy_2d, axis=0))
+    axs[1].plot(run.flux.s_phi, np.max(run.flux.energy_2d, axis=1))
     for s_nod_i in run.wall.special_nodes:
-        ax.axvline(x=run.wall.s_nodes[s_nod_i], color='k')
-    ax.set_xlabel('s_theta [m]')
-    ax.set_title('Max Energy flux [MW/m^2]\n'
-                 f'h_phi = {run.flux.h_phi:.2e}, h_theta_2d = {run.flux.h_theta_2d:.2e}')
+        axs[0].axvline(x=run.wall.s_nodes[s_nod_i], color='k')
+    for i in range(2):
+        axs[i].set_title('Max Energy flux [MW/m^2]\n'
+                            f'h_phi = {run.flux.h_phi:.2e}, h_theta_2d = '
+                            f'{run.flux.h_theta_2d:.2e}')
+    axs[0].set_xlabel('s_theta [m]')
+    axs[1].set_xlabel('s_phi [m]')
     fig.savefig(output_dir + '/max_energy_flux_2d_line.png',
                 bbox_inches='tight', dpi=300)
     plt.close('all')
