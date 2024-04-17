@@ -17,3 +17,11 @@ output_data/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
 output_data/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
 output_data/*/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
 output_data/*/*/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+plots/* filter=lfs diff=lfs merge=lfs -text
+plots/*/* filter=lfs diff=lfs merge=lfs -text
+plots/*/*/* filter=lfs diff=lfs merge=lfs -text
+plots/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+plots/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+plots/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+plots/*/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
+plots/*/*/*/*/*/*/*/* filter=lfs diff=lfs merge=lfs -text
