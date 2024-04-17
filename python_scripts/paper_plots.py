@@ -9,7 +9,9 @@ import os
 import pickle
 import time
 from matplotlib.colors import Normalize
-from matplotlib.cm import ScalarMappable, viridis  # or any other colormap you prefer
+# pylint: disable=no-name-in-module
+from matplotlib.cm import ScalarMappable, viridis
+# pylint: enable=no-name-in-module
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
@@ -385,7 +387,7 @@ def plot_rmp_distribution(all_runs):
         color = scalar_map.to_rgba(new_energy_flux_mid[i])
         axs[0].plot(x_points[i:i+2], y_points[i:i+2],
                     color=color)
-    cbar = plt.colorbar(scalar_map, ax=axs[0], orientation='vertical')
+    plt.colorbar(scalar_map, ax=axs[0], orientation='vertical')
     axs[0].set_aspect('equal')
     axs[0].set_xlim(0, 7.5)
     axs[0].set_ylim(-10, 10)
@@ -410,25 +412,96 @@ def plot_rmp_distribution(all_runs):
                  x=0.6)
     output_dir = os.path.join(REPOSITORY_PATH, "plots")
     output_path = os.path.join(output_dir,
-                               f"energy_flux_distribution_rmp")
+                               "energy_flux_distribution_rmp")
     fig.savefig(output_path + '.pdf', bbox_inches='tight')
     fig.savefig(output_path + '.png', bbox_inches='tight',
                 dpi=300)
     plt.close(fig)
 
-# def plot_rwm_runs(all_runs):
-#     """
-#     This function plots the RWM runs to produce Figure 6 of the paper.
-#     """
-#     for run_i in all_runs:
-#         if run_i.log.ripple:
+def plot_rwm_runs(all_runs):
+    """
+    This function plots the RWM runs to produce Figure 6 of the paper.
+    """
+
+    def create_csv():
+        # First we need to filter the rwm runs
+        runs = []
+        for run_i in all_runs:
+            if run_i.log.bplasma:
+                if run_i.log.bplasma_n == 1:
+                    runs.append(run_i)
+        # Next sort the runs by bscale
+        runs.sort(key=lambda x: x.log.rwm_bscale, reverse=False)
+
+        runs_metadata = []
+        for run_i in runs:
+            output_dir_i = os.path.join(output_dir,
+                                        f"bscale_{run_i.log.rwm_bscale}")
+            calc_energy_flux(run_i, output_dir_i)
+            runs_metadata.append([run_i.log.rwm_bscale,
+                                  run_i.flux.max_energy_2d,
+                                  run_i.flux.total_energy,
+                                  run_i.flux.conf_band_2d,
+                                  run_i.flux.conf_band_total,
+                                  run_i.flux.h_phi,
+                                  run_i.flux.h_theta_2d])
+        columns = ['bscale', 'max_energy_flux', 'total_energy_flux', 'conf_band_2d',
+                   'conf_band_total', 'h_phi', 'h_theta_2d']
+        df = pd.DataFrame(runs_metadata, columns=columns)
+        df.to_csv(os.path.join(output_dir, 'rwm_runs.csv'))
+
+    output_dir = os.path.join(REPOSITORY_PATH, "plots", "rwm_runs")
+    make_csv = False
+    save_axisymmetric = False
+    if make_csv:
+        create_csv()
+    df = pd.read_csv(os.path.join(output_dir, 'rwm_runs.csv'))
+    output_dir_i = os.path.join(output_dir, "axisymmetric")
+    if save_axisymmetric:
+        for run_i in all_runs:
+            if run_i.log.axisymmetric:
+                run_axisymmetric = run_i
+        calc_energy_flux(run_axisymmetric, output_dir_i)
+        pickle.dump(run_axisymmetric,
+                    open(os.path.join(output_dir_i, 'axisymmetric_run.pickle'), 'wb'))
+    else:
+        run_axisymmetric = pickle.load(open(os.path.join(output_dir_i, 
+                                                         'axisymmetric_run.pickle'), 'rb'))
+
+    fig, axs = plt.subplots(1, 2)
+    fig_size = fig.get_size_inches()
+    fig_size[0] *= 2
+    fig.set_size_inches(fig_size)
+    bscales = df.sort_values(by='bscale').bscale.values
+    max_energy_flux = df.sort_values(by='bscale').max_energy_flux.values
+    total_energy_flux = df.sort_values(by='bscale').total_energy_flux.values \
+                      / run_axisymmetric.log.pinj * 100
+    conf_band_2d = df.sort_values(by='bscale').conf_band_2d.values
+    conf_band_total = df.sort_values(by='bscale').conf_band_total.values \
+                    / run_axisymmetric.log.pinj * 100
+    axs[0].errorbar(bscales, max_energy_flux, yerr=conf_band_2d)
+    axs[1].errorbar(bscales, total_energy_flux, yerr=conf_band_total)
+    axs[0].set_ylabel(r'Maximum Alpha Particle Energy Flux [MW m$^{-2}$]')
+    axs[1].set_ylabel('Power lost [%]')
+    for i in range(2):
+        axs[i].set_xlabel('Magnetic field strength of the RWM at the sensors [T]')
+        axs[i].set_xscale('log')
+        axs[i].set_yscale('log')
+    fig.suptitle('RWM field results')
+
+    output_path = os.path.join(output_dir, 'max_and_total_flux_vs_bscale')
+    fig.savefig(output_path + '.pdf', bbox_inches='tight')
+    fig.savefig(output_path + '.png', bbox_inches='tight',
+                dpi=300)
+    plt.close(fig)
 
 if __name__ == "__main__":
     start_time = time.time()
     RUNS = run.create_runs_list(RUNS_DIRECTORY)
-    # paper_plots_3d.coil_plot_3d(gfile_path=GFILE_PATH)
-    # plot_ripple_runs(RUNS)
-    # plot_rmp_runs(RUNS)
+    paper_plots_3d.coil_plot_3d(gfile_path=GFILE_PATH)
+    plot_ripple_runs(RUNS)
+    plot_rmp_runs(RUNS)
     plot_rmp_distribution(RUNS)
+    plot_rwm_runs(RUNS)
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
