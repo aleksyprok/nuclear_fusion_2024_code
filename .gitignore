@@ -172,8 +172,6 @@ shell_scripts/test_dmtcp*
 shell_scripts/test_dmtcp*
 shell_scripts/job.sbatch
 pytest.ini
-output_data/FEC_2024
-output_data/axisymmetric_tests
 plots/rmp_runs_remap
 plot/ripple_field_contour.png
 input_data/SPR-045-14.eqdsk
