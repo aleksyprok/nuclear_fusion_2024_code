@@ -213,7 +213,8 @@ def coil_plot_3d(gfile_path=None):
     ax.yaxis.pane.set_edgecolor('w')
     ax.zaxis.pane.set_edgecolor('w')
 
-    orange_patch = mpatches.Patch(color='tab:orange', label='LCFS')
+    orange_patch = mpatches.Patch(color='tab:orange',
+                                  label='Last Closed Flux Surface')
     legend_line_blue = Line2D([0], [0], color='tab:blue',
                             label='In-vessel ELM' +
                             ' suppression coils/\nPassive RWM suppression coils')
