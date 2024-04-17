@@ -465,7 +465,7 @@ def plot_rwm_runs(all_runs):
         pickle.dump(run_axisymmetric,
                     open(os.path.join(output_dir_i, 'axisymmetric_run.pickle'), 'wb'))
     else:
-        run_axisymmetric = pickle.load(open(os.path.join(output_dir_i, 
+        run_axisymmetric = pickle.load(open(os.path.join(output_dir_i,
                                                          'axisymmetric_run.pickle'), 'rb'))
 
     fig, axs = plt.subplots(1, 2)
