@@ -205,8 +205,8 @@ def get_s_nodes(r_wall, z_wall):
 
 def get_rz_from_s_theta(s_theta, r_wall, z_wall):
     """
-    Calculate the r and z coordinates from the s_theta
-    coordinates of the wall.
+    Calculate the r and z coordinates from s_theta
+    coordinates on the wall.
 
     Args:
         s_theta: np.ndarray
