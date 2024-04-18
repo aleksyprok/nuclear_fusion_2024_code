@@ -173,5 +173,5 @@ shell_scripts/test_dmtcp*
 shell_scripts/job.sbatch
 pytest.ini
 plots/rmp_runs_remap
-plot/ripple_field_contour.png
+plots/ripple_field_contour_vtt.png
 input_data/SPR-045-14.eqdsk
