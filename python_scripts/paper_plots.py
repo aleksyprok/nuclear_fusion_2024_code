@@ -322,6 +322,7 @@ def plot_rmp_runs(all_runs):
                 axs[i, j].set_title(f'n = {bplasma_n}')
                 axs[i, j].set_yscale('log')
             axs[i, 0].set_ylabel(r'Maximum Alpha Particle Energy Flux [MW m$^{-2}$]')
+            axs[i, 1].set_ylabel(r'Alpha Power Lost [%]')
             output_path = os.path.join(output_dir,
                                        f"max_and_total_flux_vs_phase_{coil_set}")
             if coil_set == "interior_rmp":
