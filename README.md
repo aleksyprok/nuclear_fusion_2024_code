@@ -36,7 +36,7 @@ This repository is organized as follows:
   - `flux.py` - This module contains routines for calculating the alpha particle energy flux on the inner wall of the tokamak.
   - `generate_alphas.py` - This module contains routines for calculating the initial position and velocity of the alpha particle markers and is used in `prepare_profiles.py`.
   - `log.py` - This module contains routines for reading in the `LOG` files from the LOCUST simulations and storing useful information as attributes in the `log` object for use in the other modules.
-  - `markers.py` - This module reads in the `FINAL_STATE files from the LOCUST simulations and stores useful information as attributes in the `markers` object for use in the other modules.
+  - `markers.py` - This module reads in the `FINAL_STATE` files from the LOCUST simulations and stores useful information as attributes in the `markers` object for use in the other modules.
   - `my_gfile_reader.py` - Module for reading in eqdsk files (not written by me).
   - `paper_plots_3d.py` - Contain the code for producing the 3D plot which appears in the paper. This module is used in `paper_plots.py`.
   - `paper_plots_extra.py` - Contains code for producing the extra plots which don't appear in the paper but are still useful for checking the results. This module is used in `paper_plots.py`.
