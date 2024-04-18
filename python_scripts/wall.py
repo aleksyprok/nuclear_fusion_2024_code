@@ -3,6 +3,7 @@ Module contains the routines to parameterize the wall.
 """
 
 from multiprocessing import Process, Manager, cpu_count, shared_memory
+import time
 import numpy as np
 from shapely.geometry import Point, Polygon, LineString
 from shapely.ops import nearest_points
@@ -11,30 +12,29 @@ from scipy import interpolate
 
 class Wall:
     """
-    Class for storing information about the wall.
+    Class for storing information about the wall. Specifically, converting from
+    cylindrical to coordinates at the wall to s_phi, s_theta wall coordiantes
+    and vice versa.
     """
     def __init__(self,
-                 r_wall : np.ndarray,
-                 z_wall : np.ndarray,
-                 num_grid_points : int,
+                 wall_path: str,
                  special_nodes=(0, 1, 2, 3)):
         """
         Args:
-            r_wall: array of the r coordinates of the wall
+            r: array of the r coordinates of the wall
             z_wall: array of the z coordinates of the wall
-            num_grid_points: number of grid points to use for the kdes.
             special_nodes: list of the special node indices, we use this to
                            mark where boundaries of the outer wall
                            upper divertor, inner wall and lower divertor.
         """
-        self.r_wall = r_wall
-        self.z_wall = z_wall
-        self.num_grid_points = num_grid_points
+        wall_rz = np.loadtxt(wall_path)
+        self.r = wall_rz[:, 0]
+        self.z = wall_rz[:, 1]
         self.special_nodes = special_nodes
 
 
-        self.cr, self.cz = calc_wall_centroid(r_wall, z_wall)
-        self.s_nodes = get_s_nodes(r_wall, z_wall)
+        self.cr, self.cz = calc_wall_centroid(self.r, self.z)
+        self.s_nodes = get_s_nodes(self.r, self.z)
 
         self.s_phi_min = 0
         self.s_phi_max = 2 * np.pi * self.cr
@@ -42,13 +42,8 @@ class Wall:
         self.s_theta_min = 0
         self.s_theta_max = self.s_nodes[-1]
 
-        self.s_phi = np.linspace(self.s_phi_min, self.s_phi_max, num_grid_points)
-        self.s_theta = np.linspace(self.s_theta_min, self.s_theta_max, num_grid_points)
-        self.s_phi_mg, self.s_theta_mg = np.meshgrid(self.s_phi, self.s_theta,
-                                                     indexing='ij')
-
-        self.scale_factor_1d = ScaleFactor1D(r_wall, z_wall)
-        self.scale_factor_2d = ScaleFactor2D(r_wall, z_wall)
+        self.scale_factor_1d = ScaleFactor1D(self.r, self.z)
+        self.scale_factor_2d = ScaleFactor2D(self.r, self.z)
 
 def calc_wall_centroid(r_wall, z_wall):
     """
@@ -129,7 +124,8 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
                     if index == len(r_wall) - 2:
                         print('Error: Unable to calculate s_theta.')
 
-    print('\nCalculating s_theta from r_coords and z_coords.')
+    print('Calculating s_theta from r_coords and z_coords.')
+    start_time = time.time()
 
     wall_coords = np.vstack([r_wall, z_wall]).T
     poly = Polygon(wall_coords)
@@ -139,7 +135,7 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
     s_theta_nodes[1:] = np.cumsum(ds[:-1])
 
     shm = shared_memory.SharedMemory(create = True, \
-                                    size = np.zeros(len(r_coord)).nbytes)
+                                     size = np.zeros(len(r_coord)).nbytes)
     s_theta = np.ndarray(len(r_coord), dtype = float, buffer = shm.buf)
     n_array_list = np.array_split(np.arange(len(r_coord)), cpu_count())
     with Manager():
@@ -158,7 +154,29 @@ def get_s_theta_from_rz(r_coord, z_coord, r_wall, z_wall):
     shm.close()
     shm.unlink()
 
+    print(f'Time taken: {time.time() - start_time:.2f} seconds')
+
     return s_theta
+
+def get_s_phi_from_phi(phi, r_wall, z_wall):
+    """
+    Calculate the s_phi coordinate from the phi coordinate
+    of the wall.
+
+    Args:
+        phi: np.ndarray
+            The phi coordinate markers that hit the wall
+        r_wall: np.ndarray
+            The r coordinates of the wall
+        z_wall: np.ndarray
+            The z coordinates of the wall
+
+    Returns:
+        s_phi: np.ndarray
+            The s_phi coordinates
+    """
+    cr, _ = calc_wall_centroid(r_wall, z_wall)
+    return cr * (phi % (2 * np.pi))
 
 def get_s_nodes(r_wall, z_wall):
     """
@@ -187,8 +205,8 @@ def get_s_nodes(r_wall, z_wall):
 
 def get_rz_from_s_theta(s_theta, r_wall, z_wall):
     """
-    Calculate the r and z coordinates from the s_theta
-    coordinates of the wall.
+    Calculate the r and z coordinates from s_theta
+    coordinates on the wall.
 
     Args:
         s_theta: np.ndarray

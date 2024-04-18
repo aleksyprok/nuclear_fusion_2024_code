@@ -37,7 +37,7 @@ class Log:
         self.total_stopped_power_string: Optional[str] = None
         self.total_stopped_power: Optional[float] = None
         self.total_stopped_power_error: Optional[float] = None
-        self.pinj: Optional[float] = None
+        self.pinj: Optional[float] = None # Total injected power [MW]
         self.simulation_time = None
         parsing_map = {
             ':locust_info : analytical TF ripple field':
@@ -109,7 +109,6 @@ class Log:
                 self.rwm_gain = float(self.bplasma_file.split('G=')[1].split('_')[0])
             if 'bscale=' in self.bplasma_file:
                 self.rwm_bscale = float(self.bplasma_file.split('bscale=')[1].split('_')[0])
-        print(self.log_path)
         if self.total_stopped_power_string.split()[1] == '+-':
             self.total_stopped_power = float(self.total_stopped_power_string.split()[0])
             self.total_stopped_power_error = float(self.total_stopped_power_string.split()[2][:-2])

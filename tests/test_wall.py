@@ -74,3 +74,15 @@ def test_scalefactor1d():
     sf_array = sf(s_theta)
     sf_array_test = 1 / (2 * np.pi * r_array)
     assert np.allclose(sf_array, sf_array_test, atol=1e-8)
+
+def test_get_s_phi_from_phi():
+    """
+    Test the get_s_phi_from_phi function.
+    """
+    phi = np.array([-2, 2, 4, 6, 2 * np.pi + 2])
+    r_wall = np.array([1, 2, 2, 1, 1])
+    z_wall = np.array([0, 0, 1, 1, 0])
+    cr = 1.5
+    s_phi = wall.get_s_phi_from_phi(phi, r_wall, z_wall)
+    s_phi_test = cr * (phi % (2 * np.pi))
+    assert np.allclose(s_phi, s_phi_test, atol=1e-8)
