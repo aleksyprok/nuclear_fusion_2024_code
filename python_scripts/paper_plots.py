@@ -323,18 +323,21 @@ def plot_rmp_runs(all_runs):
                 axs[i, j].set_yscale('log')
             axs[i, 0].set_ylabel(r'Maximum Alpha Particle Energy Flux [MW m$^{-2}$]')
             axs[i, 1].set_ylabel(r'Alpha Power Lost [%]')
-            output_path = os.path.join(output_dir,
-                                       f"max_and_total_flux_vs_phase_{coil_set}")
-            if coil_set == "interior_rmp":
-                fig.suptitle("In-Vessel ELM Suppression Results",
-                             y=0.92)
-            elif coil_set == "exterior_rmp":
-                fig.suptitle("Out-of-Vessel ELM Suppression Results",
-                             y=0.92)
-            fig.savefig(output_path + '.pdf', bbox_inches='tight')
-            fig.savefig(output_path + '.png', bbox_inches='tight',
-                        dpi=300)
-            plt.close(fig)
+        for j in range(2):
+            axs[2, j].set_xlabel(r'Phase shift (\Delta \phi) [degrees]')
+        fig.tight_layout()
+        output_path = os.path.join(output_dir,
+                                    f"max_and_total_flux_vs_phase_{coil_set}")
+        if coil_set == "interior_rmp":
+            fig.suptitle("In-Vessel ELM Suppression Results",
+                            y=0.92)
+        elif coil_set == "exterior_rmp":
+            fig.suptitle("Out-of-Vessel ELM Suppression Results",
+                            y=0.92)
+        fig.savefig(output_path + '.pdf', bbox_inches='tight')
+        fig.savefig(output_path + '.png', bbox_inches='tight',
+                    dpi=300)
+        plt.close(fig)
 
 def plot_rmp_distribution(all_runs):
     """
