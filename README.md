@@ -49,8 +49,8 @@ This repository is organized as follows:
 `shell_scripts/` Contains shell scripts intended to be run on a GPU cluster to compile, run and post process the LOCUST simulations.
 
   - `compile.sh` - This complies LOCUST and produces a binary for each set of parameters we need to make the plots in the paper.
-  - `èxtact_log_and_fstate.sh` - This extracts the data we need from the `LOG` files and `FINAL_STATE` files.
-  - `run_interactive.sh` - This is only neeed if you intend to run a LOCUST simulation in interactive mode.
+  - `extract_log_and_fstate.sh` - This extracts the data we need from the `LOG` files and `FINAL_STATE` files.
+  - `run_interactive.sh` - This is only needed if you intend to run a LOCUST simulation in interactive mode.
   - `run.sh` - This is intended to be run after compiling and executes the binaries produced by `compile.sh`.
 
 
@@ -60,7 +60,7 @@ This repository is organized as follows:
 
 `/.gitignore` - Lists files and directories that are to be ignored by version control.
 
-`LICENSE` - Contains the LICENCE file. It says that I am happy for anyone to use this code as they wish, however, I'm not sure what UKAEA's policy is!
+`LICENSE` - Contains the LICENSE file. It says that I am happy for anyone to use this code as they wish, however, I'm not sure what UKAEA's policy is!
 
 `/README.md` - Provides an overview and documentation for the project.
 
