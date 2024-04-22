@@ -148,7 +148,7 @@ We now need to run `shell_scripts/extract_log_and_fstate.sh` to get the data we 
 `~/locust.STEP/OutputFiles/output_data_raw`, then setting
 ```
 SRC_DIR=$HOME"/locust.STEP/OutputFiles/output_data_raw"
-DEST_DIR=$HOME"/locust.STEP/OutputFiles/output_data_raw"
+DEST_DIR=$HOME"/locust.STEP/OutputFiles/output_data_processed"
 ```
 in the shell script before running it. This script extracts only the data we need, by copying the `FINAL_STATE` and `LOG` files as well as removing redundant lines
 of text from the `LOG` file. This saves storage space and significantly reduces the time it take to the read the `LOG` files later.
