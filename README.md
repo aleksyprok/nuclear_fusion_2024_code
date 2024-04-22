@@ -159,7 +159,7 @@ Now download the data from CSD3 to your local machine. I put the data in `output
 
 ### Step 10: Produce plots.
 
-To produce plots simply execute `python_scripts/paper_plots.py`. Note that you need to ensure that you have followed the installation instructions above first. The code should take about one minute to run with the `make_csv` and `save_axisymmetric` values set to `False`. With these to `True` the code will take about 6 hours to run. With `make_csv` and `save_axisymmetric` set to `True` the code will perform a full run of the code and calculate the optimum bandwidth to use and calculate the bootstrap errors. However, since I have already calculated these values and saved them in `csv` files in:
+To produce plots simply execute `python_scripts/paper_plots.py`. Note that you need to ensure that you have followed the installation instructions above first. The code should take about one minute to run with the `make_csv` and `save_axisymmetric` values set to `False`. With these to `True` the code will take about 6 hours to run. With `make_csv` and `save_axisymmetric` set to `True` the code will perform a full run of the code and calculate the optimum bandwidth to use and calculate the bootstrap errors. However, I have already calculated these values and saved them in `csv` files in:
   - `plots/ripple_runs.csv`.
   - `plots/rmp_runs.csv`.
   - `plots/rwm_runs.csv`.
