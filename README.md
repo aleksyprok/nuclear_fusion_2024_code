@@ -83,8 +83,8 @@ This repository is organized as follows:
 The first thing we did was produce the profile data. This was done using the `prepare_profiles.py` script. This script takes the raw data from the input directory and processes it into a format that can be used for simulations. Note that I have already done this to produce:
   - `input_data/ion_info_SPR-045-16.dat`
   - `input_data/profile_SPR-045-16_ne.dat`
-  - `input_data/profile_SPR-045-16_ne.dat`
   - `input_data/profile_SPR-045-16_Te.dat`
+  - `input_data/profile_SPR-045-16_Ti.dat`
   - `input_data/SPR-045-16_markers_1000000.dat`
 
 ### Step 2: ssh into GPU cluster
