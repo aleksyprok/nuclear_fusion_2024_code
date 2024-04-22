@@ -19,7 +19,7 @@ This repository is organized as follows:
   - `profile_SPR-045-16_Te.dat` - Similar to `profile_SPR-045-16_ne.dat` but for the electron temperatures.
   - `profile_SPR-045-16_Ti.dat` - Similar to `profile_SPR-045-16_ne.dat` but for the ion temperatures.
   - `profiles_SPR-045-16.CDF` - Outputted data from a JETTO run in CDF format, specifically SPR-045-16 see (https://simdb.step.ukaea.uk/alias/smars/jetto/step/88888/dec1023/seq-1). `python_scripts/prepare_profiles.py` reads this file in to produce the `profile_SPR-045-16_ne.dat` and `profile_SPR-045-16_Te.dat` files.
-  - `SPP-001_wall.dat` - Contains a 2D trace of the inner wall of the tokamak in the poloidal plane. We use the to make plots later.
+  - `SPP-001_wall.dat` - Contains a 2D trace of the inner wall of the tokamak in the poloidal plane. We use this to make plots later.
   - `SPP-001-1.cdb.locust` - The full tetrahedral volumetric wall mesh used by LOCUST.
   - `SPR-045-16_markers_1000000.dat` - The initial position and velocity of the alpha particle markers. This file is produced by running `python_scripts/prepare_profiles.py` on the `profiles_SPR-045-16.CDF` file.
   - `SPR-045-16.eqdsk` - The magnetic field which we took from the JETTO run above.
@@ -78,7 +78,7 @@ This repository is organized as follows:
 
 ## How to produce data for the paper
 
-### Step 1: Produce density/temperature profiles and alpha particle initial position.
+### Step 1: Produce density/temperature profiles as well as alpha particle initial position and velocity.
 
 The first thing we did was produce the profile data. This was done using the `prepare_profiles.py` script. This script takes the raw data from the input directory and processes it into a format that can be used for simulations. Note that I have already done this to produce:
   - `input_data/ion_info_SPR-045-16.dat`
