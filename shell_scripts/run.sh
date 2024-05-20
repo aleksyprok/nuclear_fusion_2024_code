@@ -39,8 +39,8 @@ cat > job.sbatch << EOF
 #SBATCH --mail-user=alex.prokopyszyn@ukaea.uk
 #SBATCH --output=test_dmtcp_%A_%a.out
 #SBATCH --error=test_dmtcp_%A_%a.err
-#SBATCH --ntasks=248
-#SBATCH --array=0-247
+#SBATCH --ntasks=9
+#SBATCH --array=0-8
 #SBATCH --exclusive
 #SBATCH -p $partition
 
