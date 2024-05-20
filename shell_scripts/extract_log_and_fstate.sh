@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SRC_DIR="../output_data_raw"
-DEST_DIR="../output_data"
+SRC_DIR="/rds/project/iris_vol2/rds-ukaea-ap001/ir-prok1/locust.STEP/OutputFiles/spr_045_16_vs_francis_q_profile"
+DEST_DIR="/rds/project/iris_vol2/rds-ukaea-ap001/ir-prok1/locust.STEP/OutputFiles/spr_045_16_vs_francis_q_profile_processed"
 
 # Create the destination directory
 mkdir -p "$DEST_DIR"
