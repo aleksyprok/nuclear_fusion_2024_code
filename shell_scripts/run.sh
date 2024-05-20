@@ -5,7 +5,7 @@ device="csd3"
 # device="sdcc"
 tokamak="STEP"
 
-run_name="FEC_2024"
+run_name="francis_q_profile"
 
 if [[ $device == "csd3" ]]; then
     account="ukaea-ap001-GPU"
