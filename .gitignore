@@ -174,3 +174,5 @@ shell_scripts/job.sbatch
 pytest.ini
 plots/rmp_runs_remap
 plots/ripple_field_contour_vtt.png
+plots/francis_vs_spr_045_16_runs_bugged
+output_data/spr_045_16_vs_francis_q_profile_processed_bugged
