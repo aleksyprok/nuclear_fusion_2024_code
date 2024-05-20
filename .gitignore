@@ -174,4 +174,3 @@ shell_scripts/job.sbatch
 pytest.ini
 plots/rmp_runs_remap
 plots/ripple_field_contour_vtt.png
-input_data/SPR-045-14.eqdsk
