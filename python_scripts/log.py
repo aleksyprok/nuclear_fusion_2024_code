@@ -39,6 +39,7 @@ class Log:
         self.total_stopped_power_error: Optional[float] = None
         self.pinj: Optional[float] = None # Total injected power [MW]
         self.simulation_time = None
+        self.eqdsk_fname: Optional[str] = None
         parsing_map = {
             ':locust_info : analytical TF ripple field':
                 AttributeParser('analytic_ripple',
@@ -58,6 +59,8 @@ class Log:
             "....... finishing ....... : time":
                 AttributeParser('simulation_time',
                                 lambda line: float(line.split()[-5][:-1])),
+            "locust_geqdsk : Attempt to open":
+                AttributeParser('eqdsk_fname', lambda line: line.split('/')[-1][:-1]),
         }
 
         self.log_path = log_path
