@@ -61,74 +61,105 @@ def plot_all_runs():
 
         runs_metadata = []
         for i, run_i in enumerate(runs):
-            output_dir_i = os.path.join(output_dir,
-                                        f"rcoil_{run_i.log.rcoil}_ncoil_{run_i.log.ncoil}")
+            print("axisymmetric", run_i.log.axisymmetric)
+            print("analytic_ripple", run_i.log.analytic_ripple)
+            print("eqdsk_fname", run_i.log.eqdsk_fname)
+            print("bplasma", run_i.log.bplasma)
+            spr_name = run_i.log.eqdsk_fname[:-6]
+            print("spr_name", spr_name)
+            if run_i.log.axisymmetric:
+                remap_phi_n = None
+            elif run_i.log.analytic_ripple:
+                remap_phi_n = run_i.log.ncoil
+            elif run_i.log.bplasma:
+                remap_phi_n = run_i.log.bplasma_n
+
+            output_dir_i = os.path.join(output_dir, f"{spr_name}_axisymmetric_"
+                                        f"{run_i.log.axisymmetric}_analytic_ripple_"
+                                        f"{run_i.log.analytic_ripple}_bplasma_"
+                                        f"{run_i.log.bplasma}")
             if i==0:
                 paper_plots.calc_energy_flux(run_i, output_dir_i,
-                                 remap_phi_n=run_i.log.ncoil)
+                                 remap_phi_n=remap_phi_n)
             else:
                 paper_plots.calc_energy_flux(run_i, output_dir_i,
-                                 remap_phi_n=run_i.log.ncoil,
+                                 remap_phi_n=remap_phi_n,
                                  previous_run=runs[i-1])
-            runs_metadata.append([run_i.log.ncoil,
-                                  run_i.log.rcoil,
+            runs_metadata.append([spr_name,
+                                  run_i.log.axisymmetric,
+                                  run_i.log.analytic_ripple,
+                                  run_i.log.bplasma,
+                                  run_i.flux.max_energy_1d,
                                   run_i.flux.max_energy_2d,
                                   run_i.flux.total_energy,
+                                  run_i.flux.conf_band_1d,
                                   run_i.flux.conf_band_2d,
                                   run_i.flux.conf_band_total,
                                   run_i.flux.h_phi,
+                                  run_i.flux.h_theta_1d,
                                   run_i.flux.h_theta_2d])
-        columns = ['ncoil', 'rcoil', 'max_energy_flux', 'total_energy_flux', 'conf_band_2d',
-                   'conf_band_total', 'h_phi', 'h_theta_2d']
+        columns = ['spr_name', 'axisymmetric', 'analytic_ripple', 'bplasma',
+                   'max_energy_1d', 'max_energy_2d', 'total_energy',
+                   'conf_band_1d', 'conf_band_2d', 'conf_band_total',
+                   'h_phi', 'h_theta_1d', 'h_theta_2d']
         df = pd.DataFrame(runs_metadata, columns=columns)
         df.to_csv(os.path.join(output_dir, 'francis_vs_spr_045_16_runs.csv'))
 
     all_runs = run.create_runs_list(RUNS_DIRECTORY)
     output_dir = os.path.join(REPOSITORY_PATH, "plots", "francis_vs_spr_045_16_runs")
-    make_csv = True
+    make_csv = False
     if make_csv:
         create_csv()
     df = pd.read_csv(os.path.join(output_dir, 'francis_vs_spr_045_16_runs.csv'))
-    # linestyles = ['-', '--', ':']
-    # fig, axs = plt.subplots(1, 2)
-    # fig_size = fig.get_size_inches()
-    # fig_size[0] *= 2
-    # fig.set_size_inches(fig_size)
-    # for i, ncoil in enumerate([12, 16, 18]):
-    #     rcoils = df[df.ncoil == ncoil].sort_values(by='rcoil').rcoil.values
-    #     max_energy_flux = df[df.ncoil == ncoil].sort_values(by='rcoil').max_energy_flux.values
-    #     total_energy_flux = \
-    #         df[df.ncoil == ncoil].sort_values(by='rcoil').total_energy_flux.values / \
-    #         run_axisymmetric.log.pinj * 100
-    #     conf_band_2d = df[df.ncoil == ncoil].sort_values(by='rcoil').conf_band_2d.values
-    #     conf_band_total = \
-    #         df[df.ncoil == ncoil].sort_values(by='rcoil').conf_band_total.values / \
-    #         run_axisymmetric.log.pinj * 100
-    #     axs[0].errorbar(rcoils, max_energy_flux, yerr=conf_band_2d,
-    #                     label=r"$N_{coil}$ = "f"{ncoil}",
-    #                     linestyle=linestyles[i])
-    #     axs[0].axhline(y=run_axisymmetric.flux.max_energy_2d,
-    #                    color='k',
-    #                    linestyle=':')
-    #     axs[0].legend()
-    #     axs[1].errorbar(rcoils, total_energy_flux, yerr=conf_band_total,
-    #                     label=r"$N_{coil}$ = "f"{ncoil}",
-    #                     linestyle=linestyles[i])
-    #     axs[1].axhline(y=run_axisymmetric.flux.total_energy / run_axisymmetric.log.pinj * 100,
-    #                    color='k',
-    #                    linestyle=':')
-    #     axs[1].legend()
-    # axs[0].set_ylabel(r'Maximum Alpha Particle Energy Flux [MW/m$^2$]')
-    # axs[1].set_ylabel(r'Power lost [%]')
-    # fig.suptitle('TF francis_vs_spr_045_16 Field Results')
-    # for i in range(2):
-    #     axs[i].set_xlabel(r'Major radius of TF coil outer limb ($R_{coil}$) [m]')
-    #     axs[i].set_yscale('log')
-    # output_path = os.path.join(output_dir, 'max_and_total_flux_vs_rcoil')
-    # fig.savefig(output_path + ".pdf", bbox_inches='tight')
-    # fig.savefig(output_path + ".png", bbox_inches='tight',
-    #             dpi=300)
-    # plt.close(fig)
+    fig, axs = plt.subplots(1, 2)
+    fig_size = fig.get_size_inches()
+    fig_size[0] *= 2
+    fig.set_size_inches(fig_size)
+    spr_names = ["SPR-045-14", "SPR-045-16", "SPR046_16b"]
+    for spr_name in spr_names:
+        df_filtered = df[(df.spr_name == spr_name)]
+        attributes = ["axisymmetric", "analytic_ripple", "bplasma"]
+        max_energy_flux = np.zeros(3)
+        max_energy_flux_error = np.zeros(3)
+        total_energy_flux = np.zeros(3)
+        total_energy_flux_error = np.zeros(3)
+        for i, attribute in enumerate(attributes):
+            df_filtered_2 = df_filtered[df_filtered[attribute]]
+            if attribute == "analytic_ripple":
+                max_energy_flux[i] = df_filtered_2.max_energy_2d.values[0]
+            else:
+                max_energy_flux[i] = df_filtered_2.max_energy_1d.values[0]
+            max_energy_flux_error[i] = df_filtered_2.conf_band_1d.values[0]
+            total_energy_flux[i] = df_filtered_2.total_energy.values[0]
+            total_energy_flux_error[i] = df_filtered_2.conf_band_total.values[0]
+
+
+        axs[0].errorbar(range(3), max_energy_flux,
+                        yerr=max_energy_flux_error,
+                        linestyle='None',
+                        marker='+',
+                        label=spr_name)
+        axs[1].errorbar(range(3), total_energy_flux,
+                        yerr=total_energy_flux_error,
+                        linestyle='None',
+                        marker='+',
+                        label=spr_name)
+        xticks = ["Axisymmetric", "Ripple", "RMP"]
+        for i in range(2):
+            axs[i].legend()
+            axs[i].set_xticks(range(3), xticks)
+            axs[i].set_yscale('log')
+        axs[0].set_ylabel(r'Maximum Alpha Particle Energy Flux [MW/m$^2$]')
+        axs[1].set_ylabel(r'Power lost [%]')
+    fig.suptitle("Maximum Alpha Particle Energy Flux vs. SPR and 3D Field \n"
+                 r"(Ripple configuration: $R_{coil}$ = 7.25, $N_{coil}$ = 16,"
+                 "\nRMP configuration: n=3, coil_set=exterior, current=90kAt, plasma_response=True, phase=20)",
+                 y=1)
+    output_path = os.path.join(output_dir, 'max_and_total_flux_vs_spr_and_3d_field')
+    fig.savefig(output_path + ".pdf", bbox_inches='tight')
+    fig.savefig(output_path + ".png", bbox_inches='tight',
+                dpi=300)
+    plt.close(fig)
 
 if __name__ == '__main__':
     # compare_q_profiles()
