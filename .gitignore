@@ -175,3 +175,5 @@ pytest.ini
 plots/rmp_runs_remap
 plots/ripple_field_contour_vtt.png
 input_data/SPR-045-14.eqdsk
+plots/francis_vs_spr_045_16_runs_bugged
+output_data/spr_045_16_vs_francis_q_profile_processed_bugged
