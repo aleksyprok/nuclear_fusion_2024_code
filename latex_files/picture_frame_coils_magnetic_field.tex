@@ -1,0 +1,97 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{amsmath}
+
+\geometry{margin = 2cm}
+
+\title{Analytic magnetic field around picture-frame coils}
+\author{Alexander Prokopyszyn}
+\date{May 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Magnetic field around a vertical wire}
+
+Consider a vertical wire at the origin with current pointing the in the $\mathbf{\hat{z}}$ direction and extends from $z=z_{min}$ to $z=z_{max}$. Using a formula which is derived in for example:
+\begin{verbatim}
+https://www.youtube.com/watch?v=BlIEavkDUF8&t=400s
+\end{verbatim}
+we know that the magnetic field around this wire is given by:
+\[\mathbf{B}_{wire}(R, \phi, z) = \frac{\mu_0I}{4\pi}\frac{1}{R} \left[\sin(\theta_1) + \sin(\theta_2)\right]\mathbf{\hat{\phi}}.\]
+Using
+\[\sin(\theta_1) = \frac{z_{max}-z}{\sqrt{R^2+(z_{max}-z)^2}},\]
+\[\sin(\theta_2) = \frac{z-z_{min}}{\sqrt{R^2+(z-z_{min})^2}},\]
+gives
+\[\mathbf{B}_{wire}(R, \phi, z) = \frac{\mu_0I}{4\pi}\frac{1}{R} \left[\frac{z_{max}-z}{\sqrt{R^2+(z_{max}-z)^2}} + \frac{z-z_{min}}{\sqrt{R^2+(z-z_{min})^2}}\right]\mathbf{\hat{\phi}}.\]
+Using
+\[R = \sqrt{x^2+y^2},\]
+\[\mathbf{\hat{\phi}}=\frac{-y\mathbf{\hat{x}}+x\mathbf{\hat{y}}}{\sqrt{x^2+y^2}},\]
+we can convert this to Cartesian coordinates to give
+\[\mathbf{B}_{wire}(x, y, z; z_{min}, z_{max}, I) = \frac{\mu_0I}{4\pi}\frac{1}{x^2+y^2} \left[\frac{z_{max}-z}{\sqrt{x^2+y^2+(z_{max}-z)^2}} + \frac{z-z_{min}}{\sqrt{x^2+y^2+(z-z_{min})^2}}\right](-y\mathbf{\hat{x}}+x\mathbf{\hat{y}}).\]
+In vector notation this is given by
+\[\boxed{\mathbf{B}_{wire}(x, y, z; z_{min}, z_{max}, I) = \frac{\mu_0I}{4\pi}\frac{1}{x^2+y^2} \left[\frac{z_{max}-z}{\sqrt{x^2+y^2+(z_{max}-z)^2}} + \frac{z-z_{min}}{\sqrt{x^2+y^2+(z-z_{min})^2}}\right]
+\begin{pmatrix}
+    -y \\ x \\ 0
+\end{pmatrix}}\]
+
+\section{Magnetic field around a horizontal wire}
+
+We can use the forumula for the magnetic field around a vertical wire to calculate the
+ magnetic field around a wire that points
+in the $\mathbf{\hat{R}}_k = \cos(\phi_k)\mathbf{\hat{x}}+\sin(\phi_k)\mathbf{\hat{y}}$ direction
+ and extends from $R=R_{inner}$ to $R_{outer}$ at $z=h/2$.
+ We do this by taking a vertical wire which points in the $z$-direction
+ and is centred at $x=-h/2$ then apply a 90 degree rotation around the $y$-axis,
+  and then a $\phi_k$ rotation around the $z$-axis.
+
+Using the formula for the rotation matrix about the $y$ and $z$ axes
+\[R_y(\theta) = \begin{pmatrix}
+    \cos(\theta) & 0 & -\sin(\theta) \\
+    0 & 1 & 0 \\
+    \sin(\theta) & 0 & \cos(\theta)
+\end{pmatrix}\]
+\[R_z(\theta) = \begin{pmatrix}
+    1 & 0 & 0 \\
+    0 & \cos(\theta) & \sin(\theta) \\
+    0 & -\sin(\theta) & \cos(\theta)
+\end{pmatrix}\]
+We get that the formula for the magnetic field due to the upper wires in the
+ picture-frame coils is given by
+\[\mathbf{B}_{upper} = R_y(\pi/2)R_z(\phi_k)\mathbf{B}_{vwire}(x+h/2, y, z; R_{inner}, R_{outer}, I)\]
+
+\section{Magnetic field in picture-frame coils}
+
+The current design has $N_{coil}=16$ picture-frame TF coils. The $k^{\text{th}}$ coil is composed of four wires:
+\begin{enumerate}
+    \item A vertical wire at $R=R_{outer}$, $\phi=\phi_k=2\pi k/N_{coil}$ with current in the negative $\mathbf{\hat{z}}$ direction and extends from $z=-h/2$ to $z=+h/2$, where $h$ is the height of the TF coil.
+    \item  A vertical wire at $R=R_{inner}$, $\phi=\phi_k$ with current in the positive $\mathbf{\hat{z}}$ direction and extends from $z=-h/2$ to $z=+h/2$.
+    \item A horizontal wire with current which points in the $\mathbf{\hat{R}}_k = \cos(\phi_k)\mathbf{\hat{x}}+\sin(\phi_k)\mathbf{\hat{y}}$ direction and extends from $R=R_{inner}$ to $R_{outer}$ at $z=h/2$.
+    \item A horizontal wire with current that points in the negative $\mathbf{\hat{R}}_k$ direction and extends from $R=R_{inner}$ to $R_{outer}$ at $z=-h/2$.
+\end{enumerate}
+We can model the magnetic field from the vertical wires with 
+\[\mathbf{B}_{inner,k}(x,y,z) = \mathbf{B}_{wire}(x-R_{inner}\cos\phi_k, y-R_{inner}\sin{\phi_k}, z; -h/2, h/2, I),\]
+\[\mathbf{B}_{outer,k}(x,y,z) = \mathbf{B}_{wire}(x-R_{outer}\cos\phi_k, y-R_{outer}\sin{\phi_k}, z; -h/2, h/2, -I).\]
+For the horizontal wires, we can use a trick where we transform our coordinate system using the following:
+\[\begin{aligned}
+\mathbf{\hat{x}}' &= \mathbf{\hat{\phi}}_k = -\sin(\phi_k)\mathbf{\hat{x}}+\cos(\phi_k)\mathbf{\hat{y}}, \\
+\mathbf{\hat{y}}' &= \mathbf{\hat{z}}, \\
+\mathbf{\hat{z}}' &= \mathbf{\hat{R}}_k=\cos(\phi_k)\mathbf{\hat{x}} + \sin(\phi_k)\mathbf{\hat{y}}, \\
+x' &= y\cos(\phi_k) - x\sin(\phi_k), \\
+y' &= z, \\
+z' &= x\cos(\phi_k) + y\sin(\phi_k).
+\end{aligned}\]
+Hence, we can model the horizontal wires using:
+\[\mathbf{B}_{lower,k}(x,y,z) = \mathbf{B}_{wire}(x', y'+h/2, z'; R_{inner}, R_{outer}, -I),\]
+\[\mathbf{B}_{upper,k}(x,y,z) = \mathbf{B}_{wire}(x', y'-h/2, z'; R_{inner}, R_{outer}, I).\]
+Hence, the full magnetic field from all the TF coils is given by
+\[\boxed{\mathbf{B}(x, y, z) = \sum_{k=0}^{N_{coil}-1}\mathbf{B}_{inner,k} + \mathbf{B}_{outer,k} + \mathbf{B}_{lower,k} + \mathbf{B}_{upper,k}.}\]
+
+
+
+
+
+
+\end{document}
