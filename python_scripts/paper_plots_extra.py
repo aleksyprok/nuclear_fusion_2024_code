@@ -6,6 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+import python_scripts.run as python_scripts_run
 
 def plot_amise_1d(run, output_dir):
     """
@@ -148,3 +149,49 @@ def save_attributes_to_file(obj, output_dir, indent=0):
                     file.write(f"{indent_str}{attr}: {value}\n")
 
         write_attributes(obj, indent=indent)
+
+def save_percent_power_lost_to_file(output_dir):
+    """
+    Saves the percent power lost to a file.
+    """
+
+    def get_percent_power_lost(conditions_list):
+        for run_i in runs:
+            conditions_met = True
+            for condition_i in conditions_list:
+                key = condition_i[0]
+                value = condition_i[1]
+                if not run_i.log.__dict__[key] == value:
+                    conditions_met = False
+            if conditions_met:
+                return run_i.log.total_stopped_power * 100 / run_i.log.pinj
+    repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    runs_directory = os.path.join(repository_path, "output_data", "FEC_2024")
+    runs = python_scripts_run.create_runs_list(runs_directory)
+
+    master_conditions_list = [
+        [('axisymmetric', True)],
+        [('coil_set', 'exterior_rmp'), ('rmp_response', True), ('rmp_current', 90), ('rmp_phase', 20)],
+        [('coil_set', 'exterior_rmp'), ('rmp_response', True), ('rmp_current', 180), ('rmp_phase', 20)],
+        [('analytic_ripple', True), ('rcoil', 7), ('ncoil', 12)],
+        [('analytic_ripple', True), ('rcoil', 8), ('ncoil', 12)],
+        [('analytic_ripple', True), ('rcoil', 8.5), ('ncoil', 12)],
+        [('analytic_ripple', True), ('rcoil', 7), ('ncoil', 16)],
+        [('analytic_ripple', True), ('rcoil', 7), ('ncoil', 18)],
+    ]
+
+    file_path = os.path.join(output_dir, 'percent_power_lost.txt')
+    with open(file_path, "w", encoding="utf-8") as file:
+        for conditions_list in master_conditions_list:
+            percent_power_lost = get_percent_power_lost(conditions_list)
+            for condition_i in conditions_list:
+                key = condition_i[0]
+                value = condition_i[1]
+                file.write(f"{key} = {value}, ")
+            file.write(f"percent_power_lost = {percent_power_lost}\n")
+
+if __name__ == "__main__":
+
+    REPOSITORY_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    OUTPUT_DIR = os.path.join(REPOSITORY_PATH, "plots")
+    save_percent_power_lost_to_file(OUTPUT_DIR)
